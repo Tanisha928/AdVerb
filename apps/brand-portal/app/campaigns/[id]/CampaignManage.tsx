@@ -24,6 +24,7 @@ export function CampaignManage({
   const [products, setProducts] = useState(initialProducts);
   const [creatives, setCreatives] = useState(initialCreatives);
   const [busy, setBusy] = useState(false);
+  const [selectedProductId, setSelectedProductId] = useState(initialProducts[0]?.id || "");
 
   const stepIndex = Math.max(0, steps.indexOf(campaign.status));
 
@@ -49,12 +50,17 @@ export function CampaignManage({
     setCampaign(c);
     setProducts(p);
     setCreatives(cr);
+    if (!selectedProductId && p.length > 0) setSelectedProductId(p[0].id);
   }
 
   async function generate() {
+    if (!selectedProductId) {
+      toast.error("Select a product first");
+      return;
+    }
     setBusy(true);
     try {
-      await apiPost(`/campaigns/${campaign.id}/generate-creatives`);
+      await apiPost(`/campaigns/${campaign.id}/generate-creatives`, { product_id: selectedProductId });
       toast.success("Creatives generated");
       await refresh();
       router.push(`/campaigns/${campaign.id}/review`);
@@ -108,12 +114,25 @@ export function CampaignManage({
         </div>
         <div className="flex gap-2">
           {showGenerate && (
+            <select
+              value={selectedProductId}
+              onChange={(e) => setSelectedProductId(e.target.value)}
+              className="rounded-xl border border-slate-200 bg-white px-3 py-2 text-sm text-slate-700"
+            >
+              {products.map((p) => (
+                <option key={p.id} value={p.id}>
+                  {p.name}
+                </option>
+              ))}
+            </select>
+          )}
+          {showGenerate && (
             <button
-              disabled={busy || campaign.status === "generating"}
+              disabled={busy || !selectedProductId}
               onClick={generate}
               className="rounded-xl bg-indigo-600 px-4 py-2 text-sm font-semibold text-white hover:bg-indigo-500 disabled:opacity-50"
             >
-              {campaign.status === "generating" ? "Generating…" : "Generate creatives"}
+              {busy ? "Generating…" : "Generate creatives"}
             </button>
           )}
           <Link

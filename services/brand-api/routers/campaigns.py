@@ -46,6 +46,12 @@ def get_campaign(campaign_id: UUID, db: Session = Depends(get_db)):
     c = db.query(Campaign).filter(Campaign.id == campaign_id).first()
     if not c:
         raise HTTPException(status_code=404, detail="Campaign not found")
+    if c.status == "generating":
+        count = db.query(Creative).filter(Creative.campaign_id == campaign_id).count()
+        if count == 0:
+            c.status = "review"
+            db.commit()
+            db.refresh(c)
     return c
 
 

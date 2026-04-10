@@ -143,6 +143,16 @@ export default function ReviewPage() {
                     backgroundColor={c.background_color}
                     layout={c.layout}
                   />
+                  {c.assembled_image_url ? (
+                    <a
+                      href={c.assembled_image_url}
+                      target="_blank"
+                      rel="noreferrer"
+                      className="mt-2 inline-block text-xs font-semibold text-indigo-600 hover:underline"
+                    >
+                      Open full image
+                    </a>
+                  ) : null}
                   <div className="mt-3 flex items-center gap-2">
                     <AngleBadge angle={c.angle} />
                     <span className="text-[10px] uppercase text-slate-400">{c.layout}</span>
