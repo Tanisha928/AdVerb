@@ -7,11 +7,16 @@ from sqlalchemy.orm import Session
 
 from database import get_db
 from models import Brand, Campaign, Creative, Product
-from schemas import CreativeOut, CreativeReview
+from schemas import CreativeGenerateRequest, CreativeOut, CreativeReview
 from groq_copy import generate_ad_copy
 from cloudinary_util import LAYOUTS
-from image_prompt_generator import generate_image_prompt
-from image_generator import replicate_service_enabled, generate_ad_image, generate_ad_image_fast
+from image_prompt_generator import generate_background_prompt
+from image_generator import (
+    replicate_service_enabled,
+    generate_ad_image,
+    generate_ad_image_fast,
+    generate_ad_image_with_meta,
+)
 
 router = APIRouter(tags=["creatives"])
 
@@ -46,6 +51,8 @@ def _worker_render_variant(payload: tuple) -> dict:
         brand_tone,
         industry,
         primary_hex,
+        brand_logo_url,
+        product_image_url,
         i,
         v,
     ) = payload
@@ -58,20 +65,58 @@ def _worker_render_variant(payload: tuple) -> dict:
 
     layout = LAYOUTS[i % len(LAYOUTS)]
 
-    image_prompt = generate_image_prompt(
-        product_name=product_name,
-        product_description=product_description or "",
+    image_prompt = generate_background_prompt(
         brand_name=brand_name,
         brand_tone=brand_tone,
         industry=industry or "consumer goods",
         angle=angle_norm,
         layout=layout,
-        headline=headline,
         brand_color_hex=primary_hex or "#6366f1",
     )
 
     gen_fn = _replicate_generation_fn()
-    assembled_url = gen_fn(image_prompt)
+    max_attempts = int(os.environ.get("AD_CREATIVE_VARIANT_ATTEMPTS", "2"))
+    best_candidate: dict | None = None
+    last_error: str | None = None
+    for attempt in range(max_attempts):
+        seed = ((i + 1) * 1000) + attempt
+        try:
+            candidate = generate_ad_image_with_meta(
+                image_prompt,
+                negative_prompt="shoe, sneaker, footwear, product, extra object, text, watermark, logo distortion, clutter",
+                width=1024,
+                height=576,
+                seed=seed,
+                product_image_url=product_image_url,
+                brand_logo_url=brand_logo_url,
+                background_variant=i,
+            )
+        except Exception as exc:  # noqa: BLE001
+            last_error = str(exc)
+            continue
+        quality_score = float(candidate.get("quality_score") or 0.0)
+        if (best_candidate is None) or (quality_score > float(best_candidate.get("quality_score") or 0.0)):
+            best_candidate = candidate
+        if quality_score >= 0.65:
+            break
+
+    assembled_url = ""
+    quality_score = 0.0
+    if best_candidate:
+        assembled_url = str(best_candidate.get("url") or "")
+        quality_score = float(best_candidate.get("quality_score") or 0.0)
+    if not assembled_url:
+        # Fallback keeps previous behavior if metadata call unexpectedly fails.
+        try:
+            assembled_url = gen_fn(
+                image_prompt,
+                negative_prompt="shoe, sneaker, footwear, product, extra object, text, watermark, logo distortion, clutter",
+                product_image_url=product_image_url,
+                brand_logo_url=brand_logo_url,
+            )
+        except Exception as exc:  # noqa: BLE001
+            detail = last_error or str(exc)
+            raise RuntimeError(f"Variant render failed after retries: {detail}") from exc
 
     return {
         "headline": headline[:200],
@@ -81,81 +126,120 @@ def _worker_render_variant(payload: tuple) -> dict:
         "layout": layout,
         "assembled_image_url": assembled_url,
         "background_color": _background_for_angle(angle_norm),
+        "quality_score": quality_score,
     }
 
 
 @router.post("/campaigns/{campaign_id}/generate-creatives", response_model=list[CreativeOut])
-def generate_creatives(campaign_id: UUID, db: Session = Depends(get_db)):
+def generate_creatives(
+    campaign_id: UUID,
+    body: CreativeGenerateRequest,
+    db: Session = Depends(get_db),
+):
     campaign = db.query(Campaign).filter(Campaign.id == campaign_id).first()
     if not campaign:
         raise HTTPException(status_code=404, detail="Campaign not found")
     brand = db.query(Brand).filter(Brand.id == campaign.brand_id).first()
-    products = db.query(Product).filter(Product.campaign_id == campaign_id).all()
-    if not products:
-        raise HTTPException(status_code=400, detail="Add at least one product before generating creatives")
+    product = (
+        db.query(Product)
+        .filter(Product.campaign_id == campaign_id, Product.id == body.product_id)
+        .first()
+    )
+    if not product:
+        raise HTTPException(status_code=400, detail="Selected product was not found in this campaign")
 
     if not replicate_service_enabled():
         raise HTTPException(
             status_code=503,
             detail="HF_API_TOKEN is not configured — set it on brand-api for AI image creatives",
         )
+    if campaign.status == "generating":
+        existing_count = (
+            db.query(Creative).filter(Creative.campaign_id == campaign_id).count()
+        )
+        target_ready_count = 3
+        if existing_count >= target_ready_count:
+            # Recovery path: prior run completed enough creatives but status wasn't flipped.
+            campaign.status = "review"
+            db.commit()
+            existing_count = 0
+        elif existing_count == 0:
+            # Recovery path for interrupted generation runs (e.g., container restart mid-request).
+            campaign.status = "review"
+            db.commit()
+        if existing_count > 0:
+            raise HTTPException(status_code=409, detail="Creative generation already in progress for this campaign")
 
     campaign.status = "generating"
     db.commit()
 
     created: list[Creative] = []
     try:
-        for product in products:
-            data = generate_ad_copy(
+        data = generate_ad_copy(
+            product.name,
+            product.description or "",
+            list(product.key_benefits or []),
+            brand.tone if brand else "professional",
+            brand.name if brand else "Brand",
+        )
+        variants = data.get("variants") or []
+        if len(variants) < 3:
+            raise HTTPException(status_code=502, detail="AI returned fewer than 3 variants")
+
+        brand_primary = brand.color_primary if brand else "#6366f1"
+        brand_logo_url = (brand.logo_url if brand else None)
+        target_variant_count = 3
+        payloads = tuple(
+            (
                 product.name,
                 product.description or "",
-                list(product.key_benefits or []),
-                brand.tone if brand else "professional",
                 brand.name if brand else "Brand",
+                brand.tone if brand else "professional",
+                (brand.industry if brand else None),
+                brand_primary,
+                brand_logo_url,
+                product.image_url,
+                i,
+                variants[i],
             )
-            variants = data.get("variants") or []
-            if len(variants) < 4:
-                raise HTTPException(status_code=502, detail="AI returned fewer than 4 variants")
+            for i in range(target_variant_count)
+        )
 
-            brand_primary = brand.color_primary if brand else "#6366f1"
-            payloads = tuple(
-                (
-                    product.name,
-                    product.description or "",
-                    brand.name if brand else "Brand",
-                    brand.tone if brand else "professional",
-                    (brand.industry if brand else None),
-                    brand_primary,
-                    i,
-                    variants[i],
-                )
-                for i in range(4)
+        max_workers = int(os.environ.get("AD_CREATIVE_MAX_WORKERS", "2"))
+        max_workers = max(1, min(max_workers, target_variant_count))
+        with ThreadPoolExecutor(max_workers=max_workers) as executor:
+            future_map = {executor.submit(_worker_render_variant, p): p[-2] for p in payloads}
+
+            merged: dict[int, dict] = {}
+            for fut in as_completed(future_map):
+                idx = future_map[fut]
+                merged[idx] = fut.result()
+
+        ranked_rows = sorted(
+            [merged[i] for i in range(target_variant_count)],
+            key=lambda r: float(r.get("quality_score") or 0.0),
+            reverse=True,
+        )
+
+        selected_rows = ranked_rows[:3]
+        if len(selected_rows) < 3:
+            raise HTTPException(status_code=502, detail="AI returned fewer than 3 acceptable variants")
+
+        for row in selected_rows:
+            cr = Creative(
+                product_id=product.id,
+                campaign_id=campaign_id,
+                headline=row["headline"],
+                subheadline=row["subheadline"],
+                cta=row["cta"],
+                angle=row["angle"],
+                layout=row["layout"],
+                background_color=row["background_color"],
+                assembled_image_url=row["assembled_image_url"],
+                status="pending",
             )
-
-            with ThreadPoolExecutor(max_workers=4) as executor:
-                future_map = {executor.submit(_worker_render_variant, p): p[-2] for p in payloads}
-
-                merged: dict[int, dict] = {}
-                for fut in as_completed(future_map):
-                    idx = future_map[fut]
-                    merged[idx] = fut.result()
-
-            for i in range(4):
-                row = merged[i]
-                cr = Creative(
-                    product_id=product.id,
-                    campaign_id=campaign_id,
-                    headline=row["headline"],
-                    subheadline=row["subheadline"],
-                    cta=row["cta"],
-                    angle=row["angle"],
-                    layout=row["layout"],
-                    background_color=row["background_color"],
-                    assembled_image_url=row["assembled_image_url"],
-                    status="pending",
-                )
-                db.add(cr)
-                created.append(cr)
+            db.add(cr)
+            created.append(cr)
 
         db.commit()
         for cr in created:
@@ -182,8 +266,14 @@ def generate_creatives(campaign_id: UUID, db: Session = Depends(get_db)):
 
 @router.get("/campaigns/{campaign_id}/creatives", response_model=list[CreativeOut])
 def list_creatives(campaign_id: UUID, db: Session = Depends(get_db)):
-    if not db.query(Campaign).filter(Campaign.id == campaign_id).first():
+    campaign = db.query(Campaign).filter(Campaign.id == campaign_id).first()
+    if not campaign:
         raise HTTPException(status_code=404, detail="Campaign not found")
+    if campaign.status == "generating":
+        count = db.query(Creative).filter(Creative.campaign_id == campaign_id).count()
+        if count == 0 or count >= 3:
+            campaign.status = "review"
+            db.commit()
     return (
         db.query(Creative)
         .filter(Creative.campaign_id == campaign_id)
