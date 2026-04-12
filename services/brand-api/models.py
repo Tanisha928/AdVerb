@@ -51,6 +51,15 @@ class Product(Base):
     creatives = relationship("Creative", back_populates="product")
 
 
+class AdEvent(Base):
+    __tablename__ = "ad_events"
+    id = Column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4)
+    user_id = Column(UUID(as_uuid=True), ForeignKey("users.id"), nullable=True)
+    creative_id = Column(UUID(as_uuid=True), ForeignKey("creatives.id"), nullable=True)
+    campaign_id = Column(UUID(as_uuid=True), ForeignKey("campaigns.id"), nullable=True)
+    event_type = Column(Text)
+
+
 class Creative(Base):
     __tablename__ = "creatives"
     id = Column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4)
