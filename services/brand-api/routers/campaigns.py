@@ -1,10 +1,11 @@
 from uuid import UUID
 
 from fastapi import APIRouter, Depends, HTTPException
+from sqlalchemy import case, func
 from sqlalchemy.orm import Session
 
 from database import get_db
-from models import Brand, Campaign, Creative, Product
+from models import AdEvent, Brand, Campaign, Creative
 from schemas import CampaignCreate, CampaignOut, CampaignStatusPatch
 
 router = APIRouter(tags=["campaigns"])
@@ -72,18 +73,26 @@ def campaign_analytics(campaign_id: UUID, db: Session = Depends(get_db)):
     if not c:
         raise HTTPException(status_code=404, detail="Campaign not found")
 
-    rows = (
-        db.query(
-            Creative.id,
-            Creative.headline,
-            Creative.angle,
-            Creative.impressions,
-            Creative.clicks,
-            Creative.mab_weight,
-        )
+    creatives = (
+        db.query(Creative.id, Creative.headline, Creative.angle, Creative.mab_weight)
         .filter(Creative.campaign_id == campaign_id)
         .all()
     )
+    stats_rows = (
+        db.query(
+            AdEvent.creative_id,
+            func.coalesce(
+                func.sum(case((AdEvent.event_type == "impression", 1), else_=0)), 0
+            ).label("impressions"),
+            func.coalesce(
+                func.sum(case((AdEvent.event_type == "click", 1), else_=0)), 0
+            ).label("clicks"),
+        )
+        .filter(AdEvent.campaign_id == campaign_id)
+        .group_by(AdEvent.creative_id)
+        .all()
+    )
+    by_creative = {row.creative_id: (int(row.impressions), int(row.clicks)) for row in stats_rows}
 
     import os
     import redis
@@ -97,16 +106,17 @@ def campaign_analytics(campaign_id: UUID, db: Session = Depends(get_db)):
         pass
 
     variants = []
-    for row in rows:
+    for row in creatives:
         cid = str(row.id)
-        ctr = (row.clicks / row.impressions) if row.impressions else 0.0
+        imp, clk = by_creative.get(row.id, (0, 0))
+        ctr = (clk / imp) if imp else 0.0
         variants.append(
             {
                 "creative_id": cid,
                 "headline": row.headline,
                 "angle": row.angle,
-                "impressions": row.impressions,
-                "clicks": row.clicks,
+                "impressions": imp,
+                "clicks": clk,
                 "ctr": round(ctr, 4),
                 "mab_weight_redis": float(mab.get(cid, row.mab_weight or 0.25)),
             }

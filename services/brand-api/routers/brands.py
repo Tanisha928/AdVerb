@@ -1,11 +1,11 @@
 from uuid import UUID
 
 from fastapi import APIRouter, Depends, File, Form, HTTPException, UploadFile
-from sqlalchemy import func
+from sqlalchemy import case, func
 from sqlalchemy.orm import Session
 
 from database import get_db
-from models import Brand, Campaign, Creative
+from models import AdEvent, Brand, Campaign
 from schemas import BrandOut
 from cloudinary_util import upload_file
 
@@ -67,10 +67,14 @@ def brand_stats(brand_id: UUID, db: Session = Depends(get_db)):
         raise HTTPException(status_code=404, detail="Brand not found")
     q = (
         db.query(
-            func.coalesce(func.sum(Creative.impressions), 0),
-            func.coalesce(func.sum(Creative.clicks), 0),
+            func.coalesce(
+                func.sum(case((AdEvent.event_type == "impression", 1), else_=0)), 0
+            ),
+            func.coalesce(
+                func.sum(case((AdEvent.event_type == "click", 1), else_=0)), 0
+            ),
         )
-        .join(Campaign, Creative.campaign_id == Campaign.id)
+        .join(Campaign, AdEvent.campaign_id == Campaign.id)
         .filter(Campaign.brand_id == brand_id)
         .one()
     )
