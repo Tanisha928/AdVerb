@@ -11,6 +11,7 @@ import redis.asyncio as redis
 from fastapi import FastAPI, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
+from prometheus_fastapi_instrumentator import Instrumentator
 
 from mab import get_approved_creatives_redis_or_db, mab_select_variant, update_mab_weights
 from scorer import score_campaigns
@@ -203,6 +204,10 @@ app.add_middleware(
     allow_methods=["*"],
     allow_headers=["*"],
 )
+Instrumentator(
+    should_group_status_codes=True,
+    should_ignore_untemplated=True,
+).instrument(app).expose(app, endpoint="/metrics", include_in_schema=False)
 
 
 @app.post("/serve-ad")
