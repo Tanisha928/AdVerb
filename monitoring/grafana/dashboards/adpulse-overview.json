@@ -1,0 +1,104 @@
+{
+  "id": null,
+  "uid": "adpulse-overview",
+  "title": "AdPulse API Overview",
+  "tags": ["adpulse", "api", "prometheus"],
+  "timezone": "browser",
+  "schemaVersion": 39,
+  "version": 1,
+  "refresh": "10s",
+  "time": {
+    "from": "now-1h",
+    "to": "now"
+  },
+  "templating": {
+    "list": [
+      {
+        "name": "job",
+        "type": "query",
+        "label": "Service",
+        "datasource": {
+          "type": "prometheus",
+          "uid": "prometheus"
+        },
+        "refresh": 1,
+        "query": "label_values(http_requests_total, job)",
+        "includeAll": true,
+        "allValue": "ad-serving|brand-api",
+        "multi": true,
+        "current": {
+          "selected": true,
+          "text": "All",
+          "value": "$__all"
+        }
+      }
+    ]
+  },
+  "panels": [
+    {
+      "type": "timeseries",
+      "title": "Request Rate (req/s)",
+      "id": 1,
+      "gridPos": {"h": 8, "w": 12, "x": 0, "y": 0},
+      "datasource": {"type": "prometheus", "uid": "prometheus"},
+      "targets": [
+        {
+          "expr": "sum(rate(http_requests_total{job=~\"$job\"}[5m])) by (job)",
+          "legendFormat": "{{job}}"
+        }
+      ]
+    },
+    {
+      "type": "timeseries",
+      "title": "Error Rate (%)",
+      "id": 2,
+      "gridPos": {"h": 8, "w": 12, "x": 12, "y": 0},
+      "datasource": {"type": "prometheus", "uid": "prometheus"},
+      "targets": [
+        {
+          "expr": "100 * sum(rate(http_requests_total{job=~\"$job\",status=~\"5..\"}[5m])) by (job) / sum(rate(http_requests_total{job=~\"$job\"}[5m])) by (job)",
+          "legendFormat": "{{job}}"
+        }
+      ]
+    },
+    {
+      "type": "timeseries",
+      "title": "Latency p95 (seconds)",
+      "id": 3,
+      "gridPos": {"h": 8, "w": 12, "x": 0, "y": 8},
+      "datasource": {"type": "prometheus", "uid": "prometheus"},
+      "targets": [
+        {
+          "expr": "histogram_quantile(0.95, sum by (le, job) (rate(http_request_duration_seconds_bucket{job=~\"$job\"}[5m])))",
+          "legendFormat": "{{job}}"
+        }
+      ]
+    },
+    {
+      "type": "timeseries",
+      "title": "Process RSS Memory (bytes)",
+      "id": 4,
+      "gridPos": {"h": 8, "w": 12, "x": 12, "y": 8},
+      "datasource": {"type": "prometheus", "uid": "prometheus"},
+      "targets": [
+        {
+          "expr": "process_resident_memory_bytes{job=~\"$job\"}",
+          "legendFormat": "{{job}}"
+        }
+      ]
+    },
+    {
+      "type": "timeseries",
+      "title": "Process CPU (cores used)",
+      "id": 5,
+      "gridPos": {"h": 8, "w": 24, "x": 0, "y": 16},
+      "datasource": {"type": "prometheus", "uid": "prometheus"},
+      "targets": [
+        {
+          "expr": "sum(rate(process_cpu_seconds_total{job=~\"$job\"}[5m])) by (job)",
+          "legendFormat": "{{job}}"
+        }
+      ]
+    }
+  ]
+}

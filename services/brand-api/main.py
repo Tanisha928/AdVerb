@@ -1,5 +1,6 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
+from prometheus_fastapi_instrumentator import Instrumentator
 
 from routers import brands, campaigns, products, creatives
 
@@ -20,6 +21,10 @@ app.include_router(brands.router)
 app.include_router(campaigns.router)
 app.include_router(products.router)
 app.include_router(creatives.router)
+Instrumentator(
+    should_group_status_codes=True,
+    should_ignore_untemplated=True,
+).instrument(app).expose(app, endpoint="/metrics", include_in_schema=False)
 
 
 @app.get("/health")
