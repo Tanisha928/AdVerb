@@ -7,7 +7,7 @@ const sora = Sora({ subsets: ["latin"], variable: "--font-sora", display: "swap"
 const dm = DM_Sans({ subsets: ["latin"], variable: "--font-dm", display: "swap" });
 
 export const metadata: Metadata = {
-  title: "AdaptAI — Brand Portal",
+  title: "adverb — Brand Portal",
   description: "Manage campaigns and AI creatives",
 };
 

@@ -153,6 +153,8 @@ def generate_creatives(
             status_code=503,
             detail="HF_API_TOKEN is not configured — set it on brand-api for AI image creatives",
         )
+    initial_status = campaign.status or "draft"
+
     if campaign.status == "generating":
         existing_count = (
             db.query(Creative).filter(Creative.campaign_id == campaign_id).count()
@@ -244,20 +246,20 @@ def generate_creatives(
         db.commit()
         for cr in created:
             db.refresh(cr)
-        campaign.status = "review"
+        campaign.status = "live" if initial_status == "live" else "review"
         db.commit()
     except HTTPException:
         db.rollback()
         campaign = db.query(Campaign).filter(Campaign.id == campaign_id).first()
         if campaign:
-            campaign.status = "review"
+            campaign.status = "live" if initial_status == "live" else "review"
             db.commit()
         raise
     except Exception as e:
         db.rollback()
         campaign = db.query(Campaign).filter(Campaign.id == campaign_id).first()
         if campaign:
-            campaign.status = "review"
+            campaign.status = "live" if initial_status == "live" else "review"
             db.commit()
         raise HTTPException(status_code=502, detail=str(e)) from e
 

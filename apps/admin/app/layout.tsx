@@ -6,7 +6,7 @@ const inter = Inter({ subsets: ["latin"], variable: "--font-inter", display: "sw
 const ibm = IBM_Plex_Mono({ subsets: ["latin"], variable: "--font-ibm", weight: ["400", "500"], display: "swap" });
 
 export const metadata: Metadata = {
-  title: "AdaptAI — Admin",
+  title: "adverb — Admin",
   description: "Platform analytics",
 };
 

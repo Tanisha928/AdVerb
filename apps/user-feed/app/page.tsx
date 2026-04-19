@@ -45,7 +45,7 @@ export default function Home() {
           </button>
         ))}
       </div>
-      <p className="text-center text-xs text-slate-400 mt-16">Powered by AdaptAI</p>
+      <p className="text-center text-xs text-slate-400 mt-16">Powered by adverb</p>
     </div>
   );
 }

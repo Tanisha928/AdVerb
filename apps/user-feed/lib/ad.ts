@@ -15,8 +15,12 @@ export type ServedAd = {
   color_primary?: string | null;
 };
 
-export async function fetchFeed(userId: string): Promise<ServedAd[]> {
-  const res = await fetch(`${adServing()}/user/${userId}/feed`, { cache: "no-store" });
+export async function fetchFeed(userId: string, categories?: string[]): Promise<ServedAd[]> {
+  const url = new URL(`${adServing()}/user/${userId}/feed`);
+  if (categories && categories.length > 0) {
+    url.searchParams.set("categories", categories.join(","));
+  }
+  const res = await fetch(url.toString(), { cache: "no-store" });
   if (!res.ok) throw new Error("feed failed");
   return res.json();
 }

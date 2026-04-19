@@ -16,7 +16,7 @@ export function Shell({
     <div className="flex min-h-screen">
       <aside className="w-64 shrink-0 bg-sidebar text-slate-200 flex flex-col p-6">
         <Link href="/" className="font-display text-xl font-semibold tracking-tight">
-          AdaptAI
+          adverb
         </Link>
         <p className="text-xs text-slate-500 mt-1 mb-8">Brand Portal</p>
         <nav className="space-y-2 text-sm">

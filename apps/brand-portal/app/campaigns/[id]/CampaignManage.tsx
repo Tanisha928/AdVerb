@@ -53,14 +53,15 @@ export function CampaignManage({
     if (!selectedProductId && p.length > 0) setSelectedProductId(p[0].id);
   }
 
-  async function generate() {
-    if (!selectedProductId) {
+  async function generate(productId?: string) {
+    const targetProductId = productId || selectedProductId;
+    if (!targetProductId) {
       toast.error("Select a product first");
       return;
     }
     setBusy(true);
     try {
-      await apiPost(`/campaigns/${campaign.id}/generate-creatives`, { product_id: selectedProductId });
+      await apiPost(`/campaigns/${campaign.id}/generate-creatives`, { product_id: targetProductId });
       toast.success("Creatives generated");
       await refresh();
       router.push(`/campaigns/${campaign.id}/review`);
@@ -85,8 +86,7 @@ export function CampaignManage({
     }
   }
 
-  const showGenerate =
-    products.length > 0 && (campaign.status === "draft" || campaign.status === "review" || campaign.status === "generating");
+  const showGenerate = products.length > 0;
 
   return (
     <div>
@@ -129,7 +129,9 @@ export function CampaignManage({
           {showGenerate && (
             <button
               disabled={busy || !selectedProductId}
-              onClick={generate}
+              onClick={() => {
+                void generate();
+              }}
               className="rounded-xl bg-indigo-600 px-4 py-2 text-sm font-semibold text-white hover:bg-indigo-500 disabled:opacity-50"
             >
               {busy ? "Generating…" : "Generate creatives"}
@@ -178,6 +180,14 @@ export function CampaignManage({
                 </span>
               ))}
             </div>
+            <button
+              type="button"
+              disabled={busy}
+              onClick={() => generate(p.id)}
+              className="mt-4 w-full rounded-lg bg-indigo-600 py-2 text-xs font-semibold text-white hover:bg-indigo-500 disabled:opacity-50"
+            >
+              {busy ? "Generating…" : "Generate creatives for this product"}
+            </button>
           </div>
         ))}
         {products.length === 0 && (
