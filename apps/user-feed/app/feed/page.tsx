@@ -9,11 +9,26 @@ import { fetchFeed, type ServedAd } from "@/lib/ad";
 export default function FeedPage() {
   const [userId, setUserId] = useState<string | null>(null);
   const [ads, setAds] = useState<ServedAd[]>([]);
+  const [effectiveInterests, setEffectiveInterests] = useState<string[]>([]);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     const id = typeof window !== "undefined" ? localStorage.getItem("adaptai_user_id") : null;
     setUserId(id);
+    if (id) {
+      try {
+        const localInterests = JSON.parse(localStorage.getItem(`adaptai_interests_${id}`) || "[]") as string[];
+        const normalized = localInterests.map((v) => v.trim()).filter(Boolean);
+        if (normalized.length > 0) {
+          setEffectiveInterests(normalized);
+          return;
+        }
+      } catch {
+        // ignore malformed local override
+      }
+      const fallback = DEMO_USERS.find((u) => u.id === id)?.interests || [];
+      setEffectiveInterests(fallback);
+    }
   }, []);
 
   const user = DEMO_USERS.find((u) => u.id === userId);
@@ -22,7 +37,7 @@ export default function FeedPage() {
     if (!userId) return;
     setLoading(true);
     try {
-      const data = await fetchFeed(userId);
+      const data = await fetchFeed(userId, effectiveInterests);
       setAds(data.filter((a) => a && a.id && !(a as { error?: string }).error));
     } catch {
       setAds([]);
@@ -33,7 +48,7 @@ export default function FeedPage() {
 
   useEffect(() => {
     if (userId) void load();
-  }, [userId]);
+  }, [userId, effectiveInterests.join(",")]);
 
   if (!userId) {
     return (
@@ -60,7 +75,7 @@ export default function FeedPage() {
             <div>
               <p className="font-semibold">{user?.name || "Guest"}</p>
               <div className="flex flex-wrap gap-1 mt-1">
-                {user?.interests.map((i) => (
+                {effectiveInterests.map((i) => (
                   <span key={i} className="rounded-full bg-slate-100 px-2 py-0.5 text-[10px] text-slate-600">
                     {i}
                   </span>
@@ -96,13 +111,13 @@ export default function FeedPage() {
                 key={`${ad.id}-${idx}`}
                 ad={ad}
                 userId={userId}
-                category={user?.interests[idx % (user?.interests.length || 1)] || "feed"}
+                category={effectiveInterests[idx % (effectiveInterests.length || 1)] || "feed"}
               />
             ))}
           </div>
         )}
       </main>
-      <footer className="text-center text-[11px] text-slate-400 pb-6">Powered by AdaptAI</footer>
+      <footer className="text-center text-[11px] text-slate-400 pb-6">Powered by adverb</footer>
     </div>
   );
 }

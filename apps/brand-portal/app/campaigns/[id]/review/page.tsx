@@ -159,23 +159,29 @@ export default function ReviewPage() {
                   </div>
                   <p className="font-semibold mt-2 line-clamp-2">{c.headline}</p>
                   <p className="text-xs text-slate-500 line-clamp-2">{c.subheadline}</p>
-                  <div className="mt-3 flex gap-2">
-                    <button
-                      type="button"
-                      onClick={() => review(c.id, "approved")}
-                      className="flex-1 rounded-lg bg-emerald-600 py-2 text-xs font-semibold text-white hover:bg-emerald-500"
-                    >
-                      ✓ Approve
-                    </button>
-                    <button
-                      type="button"
-                      onClick={() => setRejectId(rejectId === c.id ? null : c.id)}
-                      className="flex-1 rounded-lg bg-red-600 py-2 text-xs font-semibold text-white hover:bg-red-500"
-                    >
-                      ✗ Reject
-                    </button>
-                  </div>
-                  {rejectId === c.id && (
+                  {c.status === "pending" ? (
+                    <div className="mt-3 flex gap-2">
+                      <button
+                        type="button"
+                        onClick={() => review(c.id, "approved")}
+                        className="flex-1 rounded-lg bg-emerald-600 py-2 text-xs font-semibold text-white hover:bg-emerald-500"
+                      >
+                        ✓ Approve
+                      </button>
+                      <button
+                        type="button"
+                        onClick={() => setRejectId(rejectId === c.id ? null : c.id)}
+                        className="flex-1 rounded-lg bg-red-600 py-2 text-xs font-semibold text-white hover:bg-red-500"
+                      >
+                        ✗ Reject
+                      </button>
+                    </div>
+                  ) : (
+                    <div className="mt-3 rounded-lg border border-slate-200 bg-slate-50 px-3 py-2 text-xs font-semibold text-slate-600">
+                      {c.status === "approved" ? "Approved" : "Rejected"}
+                    </div>
+                  )}
+                  {c.status === "pending" && rejectId === c.id && (
                     <div className="mt-2 space-y-2">
                       <textarea
                         value={note}
@@ -192,6 +198,9 @@ export default function ReviewPage() {
                       </button>
                     </div>
                   )}
+                  {c.status === "rejected" && c.rejection_note ? (
+                    <p className="mt-2 text-xs text-red-600">Reason: {c.rejection_note}</p>
+                  ) : null}
                 </div>
               ))}
             </div>

@@ -8,7 +8,7 @@ from datetime import date, datetime, timedelta, timezone
 from typing import Any
 import asyncpg
 import redis.asyncio as redis
-from fastapi import FastAPI, HTTPException
+from fastapi import FastAPI, HTTPException, Query
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
 from prometheus_fastapi_instrumentator import Instrumentator
@@ -279,10 +279,12 @@ async def serve_ad(body: ServeBody):
             return creative
 
         campaigns = await get_live_campaigns_cached()
+        click_history = await rds.hgetall(f"user_clicks:{body.user_id}")
         scored = score_campaigns(
             user,
             [shape_campaign_for_scorer(c) for c in campaigns],
             body.page_category,
+            click_history=click_history,
         )
         if not scored:
             creative = await fetch_fallback_creative()
@@ -346,6 +348,8 @@ async def track_click(body: TrackBody):
             "feed",
         )
         await rds.incr(f"clicks:creative:{body.creative_id}")
+        await rds.hincrby(f"user_clicks:{body.user_id}", body.campaign_id, 1)
+        await rds.expire(f"user_clicks:{body.user_id}", 60 * 60 * 24 * 30)
         await rds.delete(f"seen:{body.user_id}:{body.creative_id}")
         return {"success": True}
     except Exception as e:
@@ -354,7 +358,7 @@ async def track_click(body: TrackBody):
 
 
 @app.get("/user/{user_id}/feed")
-async def user_feed(user_id: str):
+async def user_feed(user_id: str, categories: str | None = Query(default=None)):
     out: list[dict] = []
     seen_ids: set[str] = set()
     user = await get_user_cached(user_id) if (pool and rds) else None
@@ -367,13 +371,25 @@ async def user_feed(user_id: str):
             seen_ids.add(lead["id"])
             out.append(lead)
 
-    cats = ["coffee", "fitness", "beauty", "tech", "travel", "gaming", "food", "fashion"]
+    cats: list[str] = []
+    if categories:
+        cats = [c.strip().lower() for c in categories.split(",") if c.strip()]
+    if not cats and pool:
+        async with pool.acquire() as conn:
+            row = await conn.fetchrow(
+                "SELECT interests FROM users WHERE id = $1::uuid",
+                user_id,
+            )
+        if row and row["interests"]:
+            cats = [str(c).strip().lower() for c in list(row["interests"]) if str(c).strip()]
+    if not cats:
+        cats = ["general"]
     for i in range(20):
         if len(out) >= 10:
             break
         body = ServeBody(
             user_id=user_id,
-            page_category=f"{cats[i % len(cats)]}-{i}-{time.time_ns()}",
+            page_category=cats[i % len(cats)],
             device_type="mobile",
         )
         ad = await serve_ad(body)
