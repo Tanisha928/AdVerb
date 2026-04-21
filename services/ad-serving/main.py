@@ -7,6 +7,7 @@ from contextlib import asynccontextmanager
 from datetime import date, datetime, timedelta, timezone
 from typing import Any
 import asyncpg
+import aio_pika
 import redis.asyncio as redis
 from fastapi import FastAPI, HTTPException, Query
 from fastapi.middleware.cors import CORSMiddleware
@@ -24,9 +25,14 @@ DATABASE_URL = os.environ.get(
     "postgresql://adaptai:adaptai_secret@localhost:5432/adaptai",
 )
 REDIS_URL = os.environ.get("REDIS_URL", "redis://localhost:6379")
+RABBITMQ_URL = os.environ.get("RABBITMQ_URL", "amqp://adaptai:adaptai_secret@localhost:5672/")
+
+CLICK_QUEUE = "click_events"
 
 pool: asyncpg.Pool | None = None
 rds: redis.Redis | None = None
+rmq_connection: aio_pika.RobustConnection | None = None
+rmq_channel: aio_pika.RobustChannel | None = None
 
 
 async def log_event(
@@ -217,11 +223,20 @@ class TrackBody(BaseModel):
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
-    global pool, rds
+    global pool, rds, rmq_connection, rmq_channel
     pool = await asyncpg.create_pool(DATABASE_URL, min_size=1, max_size=10)
     rds = redis.from_url(REDIS_URL, decode_responses=True)
     await init_mab_state()
+
+    rmq_connection = await aio_pika.connect_robust(RABBITMQ_URL)
+    rmq_channel = await rmq_connection.channel()
+    await rmq_channel.declare_queue(CLICK_QUEUE, durable=True)
+    logger.info("RabbitMQ connected — queue '%s' declared", CLICK_QUEUE)
+
     yield
+
+    if rmq_connection:
+        await rmq_connection.close()
     if rds:
         await rds.close()
     if pool:
@@ -339,18 +354,31 @@ async def serve_ad(body: ServeBody):
 async def track_click(body: TrackBody):
     try:
         assert rds
-        await log_event(
-            body.user_id,
-            body.creative_id,
-            body.campaign_id,
-            "click",
-            "unknown",
-            "feed",
-        )
+        # Immediate Redis counters (fast path — no queue dependency)
         await rds.incr(f"clicks:creative:{body.creative_id}")
         await rds.hincrby(f"user_clicks:{body.user_id}", body.campaign_id, 1)
         await rds.expire(f"user_clicks:{body.user_id}", 60 * 60 * 24 * 30)
         await rds.delete(f"seen:{body.user_id}:{body.creative_id}")
+
+        # Enqueue to RabbitMQ for async processing by analytics-worker
+        if rmq_channel:
+            payload = {
+                "user_id": body.user_id,
+                "creative_id": body.creative_id,
+                "campaign_id": body.campaign_id,
+                "event_type": "click",
+                "device_type": "unknown",
+                "page_category": "feed",
+                "timestamp": datetime.now(timezone.utc).isoformat(),
+            }
+            await rmq_channel.default_exchange.publish(
+                aio_pika.Message(
+                    body=json.dumps(payload).encode(),
+                    delivery_mode=aio_pika.DeliveryMode.PERSISTENT,
+                ),
+                routing_key=CLICK_QUEUE,
+            )
+            logger.debug("click enqueued user=%s creative=%s", body.user_id, body.creative_id)
         return {"success": True}
     except Exception as e:
         logger.exception("track_click: %s", e)
