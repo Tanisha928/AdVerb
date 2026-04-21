@@ -1,15 +1,23 @@
 import asyncio
 import json
+import logging
 import os
 import traceback
 
+import aio_pika
 import asyncpg
 import redis.asyncio as redis
 
 from mab_redis import update_mab_weights
 
+logging.basicConfig(level=logging.INFO)
+logger = logging.getLogger("analytics-worker")
+
 DATABASE_URL = os.environ["DATABASE_URL"]
 REDIS_URL = os.environ.get("REDIS_URL", "redis://redis:6379")
+RABBITMQ_URL = os.environ.get("RABBITMQ_URL", "amqp://adaptai:adaptai_secret@rabbitmq:5672/")
+
+CLICK_QUEUE = "click_events"
 
 
 def _decode_field(data: dict, key: str) -> str:
@@ -93,10 +101,9 @@ async def process_event(data: dict, redis_client: redis.Redis, pg: asyncpg.Pool)
     )
 
 
-async def consume_loop():
-    redis_client = redis.from_url(REDIS_URL, decode_responses=True)
-    pg = await asyncpg.create_pool(DATABASE_URL, min_size=1, max_size=5)
-
+async def consume_redis_stream(redis_client: redis.Redis, pg: asyncpg.Pool):
+    """Reads impression events from the Redis Stream ad_events."""
+    logger.info("Redis Stream consumer started")
     while True:
         try:
             last_id = await redis_client.get("worker:last_stream_id") or "0-0"
@@ -116,9 +123,40 @@ async def consume_loop():
             await asyncio.sleep(1)
 
 
-def main():
-    asyncio.run(consume_loop())
+async def consume_rabbitmq(redis_client: redis.Redis, pg: asyncpg.Pool):
+    """Reads click events from the RabbitMQ click_events queue."""
+    logger.info("RabbitMQ consumer starting — connecting to %s", RABBITMQ_URL)
+    connection = await aio_pika.connect_robust(RABBITMQ_URL)
+    async with connection:
+        channel = await connection.channel()
+        # Limit in-flight messages so the queue stays visible under load
+        await channel.set_qos(prefetch_count=20)
+        queue = await channel.declare_queue(CLICK_QUEUE, durable=True)
+        logger.info("RabbitMQ consumer ready — listening on queue '%s'", CLICK_QUEUE)
+        async with queue.iterator() as queue_iter:
+            async for message in queue_iter:
+                async with message.process():
+                    try:
+                        data = json.loads(message.body.decode())
+                        await process_event(data, redis_client, pg)
+                        logger.debug(
+                            "click processed user=%s creative=%s",
+                            data.get("user_id"),
+                            data.get("creative_id"),
+                        )
+                    except Exception:
+                        traceback.print_exc()
+
+
+async def main():
+    redis_client = redis.from_url(REDIS_URL, decode_responses=True)
+    pg = await asyncpg.create_pool(DATABASE_URL, min_size=1, max_size=5)
+
+    await asyncio.gather(
+        consume_redis_stream(redis_client, pg),
+        consume_rabbitmq(redis_client, pg),
+    )
 
 
 if __name__ == "__main__":
-    main()
+    asyncio.run(main())

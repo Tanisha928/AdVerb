@@ -1,4 +1,21 @@
 services:
+  rabbitmq:
+    image: rabbitmq:3.13-management
+    environment:
+      RABBITMQ_DEFAULT_USER: adaptai
+      RABBITMQ_DEFAULT_PASS: adaptai_secret
+    ports:
+      - "5672:5672"
+      - "15672:15672"   # Management UI — queue depth visible here under Queues tab
+    volumes:
+      - rabbitmq_data:/var/lib/rabbitmq
+    healthcheck:
+      test: ["CMD", "rabbitmq-diagnostics", "-q", "ping"]
+      interval: 10s
+      timeout: 10s
+      retries: 15
+      start_period: 30s
+
   postgres:
     # Use 16+ if your local volume was first created with PG16; else 15 is fine.
     image: postgres:16-alpine
@@ -68,22 +85,28 @@ services:
     environment:
       DATABASE_URL: postgresql://adaptai:adaptai_secret@postgres:5432/adaptai
       REDIS_URL: redis://redis:6379
+      RABBITMQ_URL: amqp://adaptai:adaptai_secret@rabbitmq:5672/
     depends_on:
       postgres:
         condition: service_healthy
       redis:
         condition: service_started
+      rabbitmq:
+        condition: service_healthy
 
   analytics-worker:
     build: ./services/analytics-worker
     environment:
       DATABASE_URL: postgresql://adaptai:adaptai_secret@postgres:5432/adaptai
       REDIS_URL: redis://redis:6379
+      RABBITMQ_URL: amqp://adaptai:adaptai_secret@rabbitmq:5672/
     depends_on:
       postgres:
         condition: service_healthy
       redis:
         condition: service_started
+      rabbitmq:
+        condition: service_healthy
     restart: always
 
   brand-portal:
@@ -153,5 +176,6 @@ services:
 volumes:
   postgres_data:
   redis_data:
+  rabbitmq_data:
   prometheus_data:
   grafana_data:
