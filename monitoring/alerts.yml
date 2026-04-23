@@ -1,5 +1,5 @@
 groups:
-  - name: adpulse-api-alerts
+  - name: AdVerb-api-alerts
     rules:
       - alert: HighApiErrorRate
         expr: |
@@ -8,7 +8,7 @@ groups:
             /
             sum(rate(http_requests_total{job=~"ad-serving|brand-api"}[5m]))
           ) > 0.05
-        for: 10m
+        for: 30s
         labels:
           severity: warning
         annotations:
