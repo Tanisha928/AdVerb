@@ -93,6 +93,7 @@ services:
         condition: service_started
       rabbitmq:
         condition: service_healthy
+    restart: unless-stopped
 
   analytics-worker:
     build: ./services/analytics-worker
@@ -152,7 +153,7 @@ services:
       - ./monitoring/alerts.yml:/etc/prometheus/alerts.yml:ro
       - prometheus_data:/prometheus
     ports:
-      - "9091:9090"
+      - "9090:9090"
     depends_on:
       - brand-api
       - ad-serving
