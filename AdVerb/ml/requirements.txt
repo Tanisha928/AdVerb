@@ -1,0 +1,12 @@
+numpy
+pandas
+pyarrow
+scikit-learn
+torch
+onnx
+open-clip-torch
+pillow
+pyyaml
+supabase
+python-dotenv
+redis

@@ -1,0 +1,14 @@
+name = "adverb-worker"
+main = "src/index.ts"
+compatibility_date = "2024-09-23"
+
+kv_namespaces = [{ binding = "CREATIVE_CACHE", id = "REPLACE_WITH_KV_ID" }]
+r2_buckets = [{ binding = "AD_ASSETS", bucket_name = "adverb-assets" }]
+
+[ai]
+binding = "AI"
+
+[vars]
+FLY_IAD_URL = "https://adverb-decision-engine.fly.dev"
+FLY_SJC_URL = "https://adverb-decision-engine-sjc.fly.dev"
+CACHE_TTL_SECONDS = "300"
