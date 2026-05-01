@@ -1,0 +1,2341 @@
+backgrounds/black.jpg:
+  brand_hint: null
+  category: background
+  label_studio_id: null
+  tags: []
+backgrounds/charcoal.jpg:
+  brand_hint: null
+  category: background
+  label_studio_id: null
+  tags: []
+backgrounds/cream.jpg:
+  brand_hint: null
+  category: background
+  label_studio_id: null
+  tags: []
+backgrounds/deep-navy.jpg:
+  brand_hint: null
+  category: background
+  label_studio_id: null
+  tags: []
+backgrounds/deep-red.jpg:
+  brand_hint: null
+  category: background
+  label_studio_id: null
+  tags: []
+backgrounds/electric-blue.jpg:
+  brand_hint: null
+  category: background
+  label_studio_id: null
+  tags: []
+backgrounds/forest-green.jpg:
+  brand_hint: null
+  category: background
+  label_studio_id: null
+  tags: []
+backgrounds/slate.jpg:
+  brand_hint: null
+  category: background
+  label_studio_id: null
+  tags: []
+backgrounds/warm-grey.jpg:
+  brand_hint: null
+  category: background
+  label_studio_id: null
+  tags: []
+backgrounds/white.jpg:
+  brand_hint: null
+  category: background
+  label_studio_id: null
+  tags: []
+overlays/apparel-shirt-01.png:
+  brand_hint: generic
+  category: apparel
+  label_studio_id: 123
+  tags:
+  - weightlifting
+  - running
+  - fashion
+overlays/apparel-shirt-02.png:
+  brand_hint: generic
+  category: apparel
+  label_studio_id: 124
+  tags:
+  - weightlifting
+  - running
+  - fashion
+overlays/apparel-shirt-03.png:
+  brand_hint: generic
+  category: apparel
+  label_studio_id: 125
+  tags:
+  - weightlifting
+  - running
+  - fashion
+overlays/apparel-shirt-04.png:
+  brand_hint: generic
+  category: apparel
+  label_studio_id: 126
+  tags:
+  - weightlifting
+  - running
+  - fashion
+overlays/apparel-shirt-05.png:
+  brand_hint: generic
+  category: apparel
+  label_studio_id: 127
+  tags:
+  - weightlifting
+  - running
+  - fashion
+overlays/apparel-shirt-06.png:
+  brand_hint: generic
+  category: apparel
+  label_studio_id: 128
+  tags:
+  - weightlifting
+  - running
+  - fashion
+overlays/apparel-shirt-07.png:
+  brand_hint: generic
+  category: apparel
+  label_studio_id: 129
+  tags:
+  - weightlifting
+  - running
+  - fashion
+overlays/apparel-shirt-08.png:
+  brand_hint: generic
+  category: apparel
+  label_studio_id: 130
+  tags:
+  - weightlifting
+  - running
+  - fashion
+overlays/apparel-shirt-09.png:
+  brand_hint: generic
+  category: apparel
+  label_studio_id: 131
+  tags:
+  - weightlifting
+  - running
+  - fashion
+overlays/apparel-shirt-10.png:
+  brand_hint: generic
+  category: apparel
+  label_studio_id: 132
+  tags:
+  - weightlifting
+  - running
+  - fashion
+overlays/apparel-shirt-11.png:
+  brand_hint: generic
+  category: apparel
+  label_studio_id: 133
+  tags:
+  - weightlifting
+  - running
+  - fashion
+overlays/apparel-shirt-12.png:
+  brand_hint: generic
+  category: apparel
+  label_studio_id: 134
+  tags:
+  - weightlifting
+  - running
+  - fashion
+overlays/apparel-shirt-13.png:
+  brand_hint: generic
+  category: apparel
+  label_studio_id: 135
+  tags:
+  - weightlifting
+  - running
+  - fashion
+overlays/apparel-shirt-14.png:
+  brand_hint: generic
+  category: apparel
+  label_studio_id: 136
+  tags:
+  - weightlifting
+  - running
+  - fashion
+overlays/apparel-shirt-15.png:
+  brand_hint: generic
+  category: apparel
+  label_studio_id: 137
+  tags:
+  - weightlifting
+  - running
+  - fashion
+overlays/apparel-shirt-16.png:
+  brand_hint: generic
+  category: apparel
+  label_studio_id: 138
+  tags:
+  - weightlifting
+  - running
+  - fashion
+overlays/apparel-shirt-17.png:
+  brand_hint: generic
+  category: apparel
+  label_studio_id: 139
+  tags:
+  - weightlifting
+  - running
+  - fashion
+overlays/apparel-shirt-18.png:
+  brand_hint: generic
+  category: apparel
+  label_studio_id: 140
+  tags:
+  - weightlifting
+  - running
+  - fashion
+overlays/apparel-shirt-19.png:
+  brand_hint: generic
+  category: apparel
+  label_studio_id: 141
+  tags:
+  - weightlifting
+  - running
+  - fashion
+overlays/apparel-shirt-20.png:
+  brand_hint: generic
+  category: apparel
+  label_studio_id: 142
+  tags:
+  - weightlifting
+  - running
+  - fashion
+overlays/apparel-shirt-21.png:
+  brand_hint: generic
+  category: apparel
+  label_studio_id: 143
+  tags:
+  - weightlifting
+  - running
+  - fashion
+overlays/apparel-shirt-22.png:
+  brand_hint: generic
+  category: apparel
+  label_studio_id: 144
+  tags:
+  - weightlifting
+  - running
+  - fashion
+overlays/apparel-shirt-23.png:
+  brand_hint: generic
+  category: apparel
+  label_studio_id: 145
+  tags:
+  - weightlifting
+  - running
+  - fashion
+overlays/apparel-shirt-24.png:
+  brand_hint: generic
+  category: apparel
+  label_studio_id: 146
+  tags:
+  - weightlifting
+  - running
+  - fashion
+overlays/apparel-shirt-25.png:
+  brand_hint: generic
+  category: apparel
+  label_studio_id: 147
+  tags:
+  - weightlifting
+  - running
+  - fashion
+overlays/apparel-shirt-26.png:
+  brand_hint: generic
+  category: apparel
+  label_studio_id: 148
+  tags:
+  - weightlifting
+  - running
+  - fashion
+overlays/apparel-shirt-27.png:
+  brand_hint: generic
+  category: apparel
+  label_studio_id: 149
+  tags:
+  - weightlifting
+  - running
+  - fashion
+overlays/apparel-shirt-28.png:
+  brand_hint: generic
+  category: apparel
+  label_studio_id: 150
+  tags:
+  - weightlifting
+  - running
+  - fashion
+overlays/apparel-shirt-29.png:
+  brand_hint: generic
+  category: apparel
+  label_studio_id: 151
+  tags:
+  - weightlifting
+  - running
+  - fashion
+overlays/apparel-shirt-30.png:
+  brand_hint: generic
+  category: apparel
+  label_studio_id: 152
+  tags:
+  - weightlifting
+  - running
+  - fashion
+overlays/apparel-shirt-31.png:
+  brand_hint: generic
+  category: apparel
+  label_studio_id: 153
+  tags:
+  - weightlifting
+  - running
+  - fashion
+overlays/apparel-shirt-32.png:
+  brand_hint: generic
+  category: apparel
+  label_studio_id: 154
+  tags:
+  - weightlifting
+  - running
+  - fashion
+overlays/apparel-shirt-33.png:
+  brand_hint: generic
+  category: apparel
+  label_studio_id: 155
+  tags:
+  - weightlifting
+  - running
+  - fashion
+overlays/apparel-shirt-34.png:
+  brand_hint: generic
+  category: apparel
+  label_studio_id: 156
+  tags:
+  - weightlifting
+  - running
+  - fashion
+overlays/apparel-shirt-35.png:
+  brand_hint: generic
+  category: apparel
+  label_studio_id: 157
+  tags:
+  - weightlifting
+  - running
+  - fashion
+overlays/apparel-shirt-36.png:
+  brand_hint: generic
+  category: apparel
+  label_studio_id: 158
+  tags:
+  - weightlifting
+  - running
+  - fashion
+overlays/apparel-shirt-37.png:
+  brand_hint: generic
+  category: apparel
+  label_studio_id: 159
+  tags:
+  - weightlifting
+  - running
+  - fashion
+overlays/apparel-shirt-38.png:
+  brand_hint: generic
+  category: apparel
+  label_studio_id: 160
+  tags:
+  - weightlifting
+  - running
+  - fashion
+overlays/apparel-shirt-39.png:
+  brand_hint: generic
+  category: apparel
+  label_studio_id: 161
+  tags:
+  - weightlifting
+  - running
+  - fashion
+overlays/apparel-shirt-40.png:
+  brand_hint: generic
+  category: apparel
+  label_studio_id: 162
+  tags:
+  - weightlifting
+  - running
+  - fashion
+overlays/apparel-shirt-41.png:
+  brand_hint: generic
+  category: apparel
+  label_studio_id: 163
+  tags:
+  - weightlifting
+  - running
+  - fashion
+overlays/apparel-shirt-42.png:
+  brand_hint: generic
+  category: apparel
+  label_studio_id: 164
+  tags:
+  - weightlifting
+  - running
+  - fashion
+overlays/apparel-shirt-43.png:
+  brand_hint: generic
+  category: apparel
+  label_studio_id: 165
+  tags:
+  - weightlifting
+  - running
+  - fashion
+overlays/apparel-shirt-44.png:
+  brand_hint: generic
+  category: apparel
+  label_studio_id: 166
+  tags:
+  - weightlifting
+  - running
+  - fashion
+overlays/apparel-shirt-45.png:
+  brand_hint: generic
+  category: apparel
+  label_studio_id: 167
+  tags:
+  - weightlifting
+  - running
+  - fashion
+overlays/apparel-shirt-46.png:
+  brand_hint: generic
+  category: apparel
+  label_studio_id: 168
+  tags:
+  - weightlifting
+  - running
+  - fashion
+overlays/apparel-shirt-47.png:
+  brand_hint: generic
+  category: apparel
+  label_studio_id: 169
+  tags:
+  - weightlifting
+  - running
+  - fashion
+overlays/apparel-shirt-48.png:
+  brand_hint: generic
+  category: apparel
+  label_studio_id: 170
+  tags:
+  - weightlifting
+  - running
+  - fashion
+overlays/apparel-shirt-49.png:
+  brand_hint: generic
+  category: apparel
+  label_studio_id: 171
+  tags:
+  - weightlifting
+  - running
+  - fashion
+overlays/apparel-shirt-50.png:
+  brand_hint: generic
+  category: apparel
+  label_studio_id: 172
+  tags:
+  - weightlifting
+  - running
+  - fashion
+overlays/apparel-shirt-51.png:
+  brand_hint: generic
+  category: apparel
+  label_studio_id: 173
+  tags:
+  - weightlifting
+  - running
+  - fashion
+overlays/apparel-shirt-52.png:
+  brand_hint: generic
+  category: apparel
+  label_studio_id: 174
+  tags:
+  - weightlifting
+  - running
+  - fashion
+overlays/apparel-shirt-53.png:
+  brand_hint: generic
+  category: apparel
+  label_studio_id: 175
+  tags:
+  - weightlifting
+  - running
+  - fashion
+overlays/apparel-shirt-54.png:
+  brand_hint: generic
+  category: apparel
+  label_studio_id: 176
+  tags:
+  - weightlifting
+  - running
+  - fashion
+overlays/apparel-shirt-55.png:
+  brand_hint: generic
+  category: apparel
+  label_studio_id: 177
+  tags:
+  - weightlifting
+  - running
+  - fashion
+overlays/apparel-shirt-56.png:
+  brand_hint: generic
+  category: apparel
+  label_studio_id: 178
+  tags:
+  - weightlifting
+  - running
+  - fashion
+overlays/apparel-shirt-57.png:
+  brand_hint: generic
+  category: apparel
+  label_studio_id: 179
+  tags:
+  - weightlifting
+  - running
+  - fashion
+overlays/apparel-shirt-58.png:
+  brand_hint: generic
+  category: apparel
+  label_studio_id: 180
+  tags:
+  - weightlifting
+  - running
+  - fashion
+overlays/apparel-shirt-59.png:
+  brand_hint: generic
+  category: apparel
+  label_studio_id: 181
+  tags:
+  - weightlifting
+  - running
+  - fashion
+overlays/apparel-shirt-60.png:
+  brand_hint: generic
+  category: apparel
+  label_studio_id: 182
+  tags:
+  - weightlifting
+  - running
+  - fashion
+overlays/apparel-shirt-61.png:
+  brand_hint: generic
+  category: apparel
+  label_studio_id: 183
+  tags:
+  - weightlifting
+  - running
+  - fashion
+overlays/apparel-shirt-62.png:
+  brand_hint: generic
+  category: apparel
+  label_studio_id: 184
+  tags:
+  - weightlifting
+  - running
+  - fashion
+overlays/apparel-shirt-63.png:
+  brand_hint: generic
+  category: apparel
+  label_studio_id: 185
+  tags:
+  - weightlifting
+  - running
+  - fashion
+overlays/apparel-shirt-64.png:
+  brand_hint: generic
+  category: apparel
+  label_studio_id: 186
+  tags:
+  - weightlifting
+  - running
+  - fashion
+overlays/apparel-shirt-65.png:
+  brand_hint: generic
+  category: apparel
+  label_studio_id: 187
+  tags:
+  - weightlifting
+  - running
+  - fashion
+overlays/apparel-shirt-66.png:
+  brand_hint: generic
+  category: apparel
+  label_studio_id: 188
+  tags:
+  - weightlifting
+  - running
+  - fashion
+overlays/apparel-shirt-67.png:
+  brand_hint: generic
+  category: apparel
+  label_studio_id: 189
+  tags:
+  - weightlifting
+  - running
+  - fashion
+overlays/apparel-shirt-68.png:
+  brand_hint: generic
+  category: apparel
+  label_studio_id: 190
+  tags:
+  - weightlifting
+  - running
+  - fashion
+overlays/apparel-shirt-69.png:
+  brand_hint: generic
+  category: apparel
+  label_studio_id: 191
+  tags:
+  - weightlifting
+  - running
+  - fashion
+overlays/apparel-shirt-70.png:
+  brand_hint: generic
+  category: apparel
+  label_studio_id: 192
+  tags:
+  - weightlifting
+  - running
+  - fashion
+overlays/fashion-earring-01.png:
+  brand_hint: generic
+  category: fashion
+  label_studio_id: 232
+  tags:
+  - fashion
+  - wellness
+overlays/fashion-earring-02.png:
+  brand_hint: generic
+  category: fashion
+  label_studio_id: 233
+  tags:
+  - fashion
+  - wellness
+overlays/fashion-earring-03.png:
+  brand_hint: generic
+  category: fashion
+  label_studio_id: 234
+  tags:
+  - fashion
+  - wellness
+overlays/fashion-earring-04.png:
+  brand_hint: generic
+  category: fashion
+  label_studio_id: 235
+  tags:
+  - fashion
+  - wellness
+overlays/fashion-earring-05.png:
+  brand_hint: generic
+  category: fashion
+  label_studio_id: 236
+  tags:
+  - fashion
+  - wellness
+overlays/fashion-earring-06.png:
+  brand_hint: generic
+  category: fashion
+  label_studio_id: 237
+  tags:
+  - fashion
+  - wellness
+overlays/fashion-earring-07.png:
+  brand_hint: generic
+  category: fashion
+  label_studio_id: 238
+  tags:
+  - fashion
+  - wellness
+overlays/fashion-earring-08.png:
+  brand_hint: generic
+  category: fashion
+  label_studio_id: 239
+  tags:
+  - fashion
+  - wellness
+overlays/fashion-earring-09.png:
+  brand_hint: generic
+  category: fashion
+  label_studio_id: 240
+  tags:
+  - fashion
+  - wellness
+overlays/fashion-earring-10.png:
+  brand_hint: generic
+  category: fashion
+  label_studio_id: 241
+  tags:
+  - fashion
+  - wellness
+overlays/fashion-earring-11.png:
+  brand_hint: generic
+  category: fashion
+  label_studio_id: 242
+  tags:
+  - fashion
+  - wellness
+overlays/fashion-earring-12.png:
+  brand_hint: generic
+  category: fashion
+  label_studio_id: 243
+  tags:
+  - fashion
+  - wellness
+overlays/fashion-earring-13.png:
+  brand_hint: generic
+  category: fashion
+  label_studio_id: 244
+  tags:
+  - fashion
+  - wellness
+overlays/fashion-earring-14.png:
+  brand_hint: generic
+  category: fashion
+  label_studio_id: 245
+  tags:
+  - fashion
+  - wellness
+overlays/fashion-earring-15.png:
+  brand_hint: generic
+  category: fashion
+  label_studio_id: 246
+  tags:
+  - fashion
+  - wellness
+overlays/fashion-earring-16.png:
+  brand_hint: generic
+  category: fashion
+  label_studio_id: 247
+  tags:
+  - fashion
+  - wellness
+overlays/fashion-earring-17.png:
+  brand_hint: generic
+  category: fashion
+  label_studio_id: 248
+  tags:
+  - fashion
+  - wellness
+overlays/fashion-earring-18.png:
+  brand_hint: generic
+  category: fashion
+  label_studio_id: 249
+  tags:
+  - fashion
+  - wellness
+overlays/fashion-earring-19.png:
+  brand_hint: generic
+  category: fashion
+  label_studio_id: 250
+  tags:
+  - fashion
+  - wellness
+overlays/fashion-earring-20.png:
+  brand_hint: generic
+  category: fashion
+  label_studio_id: 251
+  tags:
+  - fashion
+  - wellness
+overlays/fashion-earring-21.png:
+  brand_hint: generic
+  category: fashion
+  label_studio_id: 252
+  tags:
+  - fashion
+  - wellness
+overlays/fashion-earring-22.png:
+  brand_hint: generic
+  category: fashion
+  label_studio_id: 253
+  tags:
+  - fashion
+  - wellness
+overlays/fashion-earring-23.png:
+  brand_hint: generic
+  category: fashion
+  label_studio_id: 254
+  tags:
+  - fashion
+  - wellness
+overlays/fashion-earring-24.png:
+  brand_hint: generic
+  category: fashion
+  label_studio_id: 255
+  tags:
+  - fashion
+  - wellness
+overlays/fashion-earring-25.png:
+  brand_hint: generic
+  category: fashion
+  label_studio_id: 256
+  tags:
+  - fashion
+  - wellness
+overlays/fashion-earring-26.png:
+  brand_hint: generic
+  category: fashion
+  label_studio_id: 257
+  tags:
+  - fashion
+  - wellness
+overlays/fashion-earring-27.png:
+  brand_hint: generic
+  category: fashion
+  label_studio_id: 258
+  tags:
+  - fashion
+  - wellness
+overlays/fashion-earring-28.png:
+  brand_hint: generic
+  category: fashion
+  label_studio_id: 259
+  tags:
+  - fashion
+  - wellness
+overlays/fashion-earring-29.png:
+  brand_hint: generic
+  category: fashion
+  label_studio_id: 260
+  tags:
+  - fashion
+  - wellness
+overlays/fashion-earring-30.png:
+  brand_hint: generic
+  category: fashion
+  label_studio_id: 261
+  tags:
+  - fashion
+  - wellness
+overlays/fashion-earring-31.png:
+  brand_hint: generic
+  category: fashion
+  label_studio_id: 262
+  tags:
+  - fashion
+  - wellness
+overlays/fashion-earring-32.png:
+  brand_hint: generic
+  category: fashion
+  label_studio_id: 263
+  tags:
+  - fashion
+  - wellness
+overlays/fashion-earring-33.png:
+  brand_hint: generic
+  category: fashion
+  label_studio_id: 264
+  tags:
+  - fashion
+  - wellness
+overlays/fashion-earring-34.png:
+  brand_hint: generic
+  category: fashion
+  label_studio_id: 265
+  tags:
+  - fashion
+  - wellness
+overlays/fashion-earring-35.png:
+  brand_hint: generic
+  category: fashion
+  label_studio_id: 266
+  tags:
+  - fashion
+  - wellness
+overlays/fashion-earring-36.png:
+  brand_hint: generic
+  category: fashion
+  label_studio_id: 267
+  tags:
+  - fashion
+  - wellness
+overlays/fashion-earring-37.png:
+  brand_hint: generic
+  category: fashion
+  label_studio_id: 268
+  tags:
+  - fashion
+  - wellness
+overlays/fashion-earring-38.png:
+  brand_hint: generic
+  category: fashion
+  label_studio_id: 269
+  tags:
+  - fashion
+  - wellness
+overlays/fashion-earring-39.png:
+  brand_hint: generic
+  category: fashion
+  label_studio_id: 270
+  tags:
+  - fashion
+  - wellness
+overlays/fashion-earring-40.png:
+  brand_hint: generic
+  category: fashion
+  label_studio_id: 271
+  tags:
+  - fashion
+  - wellness
+overlays/fashion-earring-41.png:
+  brand_hint: generic
+  category: fashion
+  label_studio_id: 272
+  tags:
+  - fashion
+  - wellness
+overlays/fashion-earring-42.png:
+  brand_hint: generic
+  category: fashion
+  label_studio_id: 273
+  tags:
+  - fashion
+  - wellness
+overlays/fashion-earring-43.png:
+  brand_hint: generic
+  category: fashion
+  label_studio_id: 274
+  tags:
+  - fashion
+  - wellness
+overlays/fashion-earring-44.png:
+  brand_hint: generic
+  category: fashion
+  label_studio_id: 275
+  tags:
+  - fashion
+  - wellness
+overlays/fashion-earring-45.png:
+  brand_hint: generic
+  category: fashion
+  label_studio_id: 276
+  tags:
+  - fashion
+  - wellness
+overlays/fashion-earring-46.png:
+  brand_hint: generic
+  category: fashion
+  label_studio_id: 277
+  tags:
+  - fashion
+  - wellness
+overlays/fashion-earring-47.png:
+  brand_hint: generic
+  category: fashion
+  label_studio_id: 278
+  tags:
+  - fashion
+  - wellness
+overlays/fashion-earring-48.png:
+  brand_hint: generic
+  category: fashion
+  label_studio_id: 279
+  tags:
+  - fashion
+  - wellness
+overlays/fashion-earring-49.png:
+  brand_hint: generic
+  category: fashion
+  label_studio_id: 280
+  tags:
+  - fashion
+  - wellness
+overlays/fashion-earring-50.png:
+  brand_hint: generic
+  category: fashion
+  label_studio_id: 281
+  tags:
+  - fashion
+  - wellness
+overlays/fashion-earring-51.png:
+  brand_hint: generic
+  category: fashion
+  label_studio_id: 282
+  tags:
+  - fashion
+  - wellness
+overlays/fashion-earring-52.png:
+  brand_hint: generic
+  category: fashion
+  label_studio_id: 283
+  tags:
+  - fashion
+  - wellness
+overlays/fashion-earring-53.png:
+  brand_hint: generic
+  category: fashion
+  label_studio_id: 284
+  tags:
+  - fashion
+  - wellness
+overlays/fashion-earring-54.png:
+  brand_hint: generic
+  category: fashion
+  label_studio_id: 285
+  tags:
+  - fashion
+  - wellness
+overlays/fashion-earring-55.png:
+  brand_hint: generic
+  category: fashion
+  label_studio_id: 286
+  tags:
+  - fashion
+  - wellness
+overlays/fashion-earring-56.png:
+  brand_hint: generic
+  category: fashion
+  label_studio_id: 287
+  tags:
+  - fashion
+  - wellness
+overlays/fashion-earring-57.png:
+  brand_hint: generic
+  category: fashion
+  label_studio_id: 288
+  tags:
+  - fashion
+  - wellness
+overlays/fashion-earring-58.png:
+  brand_hint: generic
+  category: fashion
+  label_studio_id: 289
+  tags:
+  - fashion
+  - wellness
+overlays/fashion-earring-59.png:
+  brand_hint: generic
+  category: fashion
+  label_studio_id: 290
+  tags:
+  - fashion
+  - wellness
+overlays/fashion-earring-60.png:
+  brand_hint: generic
+  category: fashion
+  label_studio_id: 291
+  tags:
+  - fashion
+  - wellness
+overlays/fashion-earring-61.png:
+  brand_hint: generic
+  category: fashion
+  label_studio_id: 292
+  tags:
+  - fashion
+  - wellness
+overlays/fashion-earring-62.png:
+  brand_hint: generic
+  category: fashion
+  label_studio_id: 293
+  tags:
+  - fashion
+  - wellness
+overlays/fashion-earring-63.png:
+  brand_hint: generic
+  category: fashion
+  label_studio_id: 294
+  tags:
+  - fashion
+  - wellness
+overlays/fashion-earring-64.png:
+  brand_hint: generic
+  category: fashion
+  label_studio_id: 295
+  tags:
+  - fashion
+  - wellness
+overlays/fashion-earring-65.png:
+  brand_hint: generic
+  category: fashion
+  label_studio_id: 296
+  tags:
+  - fashion
+  - wellness
+overlays/fashion-earring-66.png:
+  brand_hint: generic
+  category: fashion
+  label_studio_id: 297
+  tags:
+  - fashion
+  - wellness
+overlays/fashion-earring-67.png:
+  brand_hint: generic
+  category: fashion
+  label_studio_id: 298
+  tags:
+  - fashion
+  - wellness
+overlays/fashion-earring-68.png:
+  brand_hint: generic
+  category: fashion
+  label_studio_id: 299
+  tags:
+  - fashion
+  - wellness
+overlays/fashion-earring-69.png:
+  brand_hint: generic
+  category: fashion
+  label_studio_id: 300
+  tags:
+  - fashion
+  - wellness
+overlays/fashion-earring-70.png:
+  brand_hint: generic
+  category: fashion
+  label_studio_id: 301
+  tags:
+  - fashion
+  - wellness
+overlays/fashion-handbag-01.png:
+  brand_hint: generic
+  category: fashion
+  label_studio_id: 193
+  tags:
+  - fashion
+  - wellness
+overlays/fashion-handbag-02.png:
+  brand_hint: generic
+  category: fashion
+  label_studio_id: 194
+  tags:
+  - fashion
+  - wellness
+overlays/fashion-handbag-03.png:
+  brand_hint: generic
+  category: fashion
+  label_studio_id: 195
+  tags:
+  - fashion
+  - wellness
+overlays/fashion-handbag-04.png:
+  brand_hint: generic
+  category: fashion
+  label_studio_id: 196
+  tags:
+  - fashion
+  - wellness
+overlays/fashion-handbag-05.png:
+  brand_hint: generic
+  category: fashion
+  label_studio_id: 197
+  tags:
+  - fashion
+  - wellness
+overlays/fashion-handbag-06.png:
+  brand_hint: generic
+  category: fashion
+  label_studio_id: 198
+  tags:
+  - fashion
+  - wellness
+overlays/fashion-handbag-07.png:
+  brand_hint: generic
+  category: fashion
+  label_studio_id: 199
+  tags:
+  - fashion
+  - wellness
+overlays/fashion-handbag-08.png:
+  brand_hint: generic
+  category: fashion
+  label_studio_id: 200
+  tags:
+  - fashion
+  - wellness
+overlays/fashion-handbag-09.png:
+  brand_hint: generic
+  category: fashion
+  label_studio_id: 201
+  tags:
+  - fashion
+  - wellness
+overlays/fashion-handbag-10.png:
+  brand_hint: generic
+  category: fashion
+  label_studio_id: 202
+  tags:
+  - fashion
+  - wellness
+overlays/fashion-handbag-11.png:
+  brand_hint: generic
+  category: fashion
+  label_studio_id: 203
+  tags:
+  - fashion
+  - wellness
+overlays/fashion-handbag-12.png:
+  brand_hint: generic
+  category: fashion
+  label_studio_id: 204
+  tags:
+  - fashion
+  - wellness
+overlays/fashion-handbag-13.png:
+  brand_hint: generic
+  category: fashion
+  label_studio_id: 205
+  tags:
+  - fashion
+  - wellness
+overlays/fashion-handbag-14.png:
+  brand_hint: generic
+  category: fashion
+  label_studio_id: 206
+  tags:
+  - fashion
+  - wellness
+overlays/fashion-handbag-15.png:
+  brand_hint: generic
+  category: fashion
+  label_studio_id: 207
+  tags:
+  - fashion
+  - wellness
+overlays/fashion-handbag-16.png:
+  brand_hint: generic
+  category: fashion
+  label_studio_id: 208
+  tags:
+  - fashion
+  - wellness
+overlays/fashion-handbag-17.png:
+  brand_hint: generic
+  category: fashion
+  label_studio_id: 209
+  tags:
+  - fashion
+  - wellness
+overlays/fashion-handbag-18.png:
+  brand_hint: generic
+  category: fashion
+  label_studio_id: 210
+  tags:
+  - fashion
+  - wellness
+overlays/fashion-handbag-19.png:
+  brand_hint: generic
+  category: fashion
+  label_studio_id: 211
+  tags:
+  - fashion
+  - wellness
+overlays/fashion-handbag-20.png:
+  brand_hint: generic
+  category: fashion
+  label_studio_id: 212
+  tags:
+  - fashion
+  - wellness
+overlays/fashion-handbag-21.png:
+  brand_hint: generic
+  category: fashion
+  label_studio_id: 213
+  tags:
+  - fashion
+  - wellness
+overlays/fashion-handbag-22.png:
+  brand_hint: generic
+  category: fashion
+  label_studio_id: 214
+  tags:
+  - fashion
+  - wellness
+overlays/fashion-handbag-23.png:
+  brand_hint: generic
+  category: fashion
+  label_studio_id: 215
+  tags:
+  - fashion
+  - wellness
+overlays/fashion-handbag-24.png:
+  brand_hint: generic
+  category: fashion
+  label_studio_id: 216
+  tags:
+  - fashion
+  - wellness
+overlays/fashion-handbag-25.png:
+  brand_hint: generic
+  category: fashion
+  label_studio_id: 217
+  tags:
+  - fashion
+  - wellness
+overlays/fashion-handbag-26.png:
+  brand_hint: generic
+  category: fashion
+  label_studio_id: 218
+  tags:
+  - fashion
+  - wellness
+overlays/fashion-handbag-27.png:
+  brand_hint: generic
+  category: fashion
+  label_studio_id: 219
+  tags:
+  - fashion
+  - wellness
+overlays/fashion-handbag-28.png:
+  brand_hint: generic
+  category: fashion
+  label_studio_id: 220
+  tags:
+  - fashion
+  - wellness
+overlays/fashion-handbag-29.png:
+  brand_hint: generic
+  category: fashion
+  label_studio_id: 221
+  tags:
+  - fashion
+  - wellness
+overlays/fashion-handbag-30.png:
+  brand_hint: generic
+  category: fashion
+  label_studio_id: 222
+  tags:
+  - fashion
+  - wellness
+overlays/fashion-handbag-31.png:
+  brand_hint: generic
+  category: fashion
+  label_studio_id: 223
+  tags:
+  - fashion
+  - wellness
+overlays/fashion-handbag-32.png:
+  brand_hint: generic
+  category: fashion
+  label_studio_id: 224
+  tags:
+  - fashion
+  - wellness
+overlays/fashion-handbag-33.png:
+  brand_hint: generic
+  category: fashion
+  label_studio_id: 225
+  tags:
+  - fashion
+  - wellness
+overlays/fashion-handbag-34.png:
+  brand_hint: generic
+  category: fashion
+  label_studio_id: 226
+  tags:
+  - fashion
+  - wellness
+overlays/fashion-handbag-35.png:
+  brand_hint: generic
+  category: fashion
+  label_studio_id: 227
+  tags:
+  - fashion
+  - wellness
+overlays/fashion-handbag-36.png:
+  brand_hint: generic
+  category: fashion
+  label_studio_id: 228
+  tags:
+  - fashion
+  - wellness
+overlays/fashion-handbag-37.png:
+  brand_hint: generic
+  category: fashion
+  label_studio_id: 229
+  tags:
+  - fashion
+  - wellness
+overlays/fashion-handbag-38.png:
+  brand_hint: generic
+  category: fashion
+  label_studio_id: 230
+  tags:
+  - fashion
+  - wellness
+overlays/fashion-handbag-39.png:
+  brand_hint: generic
+  category: fashion
+  label_studio_id: 231
+  tags:
+  - fashion
+  - wellness
+overlays/shoes-running-01.png:
+  brand_hint: generic
+  category: shoes
+  label_studio_id: 6
+  tags:
+  - running
+  - outdoor
+  - sport
+overlays/shoes-running-02.png:
+  brand_hint: generic
+  category: shoes
+  label_studio_id: 7
+  tags:
+  - running
+  - outdoor
+  - sport
+overlays/shoes-running-03.png:
+  brand_hint: generic
+  category: shoes
+  label_studio_id: 8
+  tags:
+  - running
+  - outdoor
+  - sport
+overlays/shoes-running-04.png:
+  brand_hint: generic
+  category: shoes
+  label_studio_id: 9
+  tags:
+  - running
+  - outdoor
+  - sport
+overlays/shoes-running-05.png:
+  brand_hint: generic
+  category: shoes
+  label_studio_id: 10
+  tags:
+  - running
+  - outdoor
+  - sport
+overlays/shoes-running-06.png:
+  brand_hint: generic
+  category: shoes
+  label_studio_id: 11
+  tags:
+  - running
+  - outdoor
+  - sport
+overlays/shoes-running-07.png:
+  brand_hint: generic
+  category: shoes
+  label_studio_id: 12
+  tags:
+  - running
+  - outdoor
+  - sport
+overlays/shoes-running-08.png:
+  brand_hint: generic
+  category: shoes
+  label_studio_id: 13
+  tags:
+  - running
+  - outdoor
+  - sport
+overlays/shoes-running-09.png:
+  brand_hint: generic
+  category: shoes
+  label_studio_id: 14
+  tags:
+  - running
+  - outdoor
+  - sport
+overlays/shoes-running-10.png:
+  brand_hint: generic
+  category: shoes
+  label_studio_id: 15
+  tags:
+  - running
+  - outdoor
+  - sport
+overlays/shoes-running-11.png:
+  brand_hint: generic
+  category: shoes
+  label_studio_id: 16
+  tags:
+  - running
+  - outdoor
+  - sport
+overlays/shoes-running-12.png:
+  brand_hint: generic
+  category: shoes
+  label_studio_id: 17
+  tags:
+  - running
+  - outdoor
+  - sport
+overlays/shoes-running-13.png:
+  brand_hint: generic
+  category: shoes
+  label_studio_id: 18
+  tags:
+  - running
+  - outdoor
+  - sport
+overlays/shoes-running-14.png:
+  brand_hint: generic
+  category: shoes
+  label_studio_id: 19
+  tags:
+  - running
+  - outdoor
+  - sport
+overlays/shoes-running-15.png:
+  brand_hint: generic
+  category: shoes
+  label_studio_id: 20
+  tags:
+  - running
+  - outdoor
+  - sport
+overlays/shoes-running-16.png:
+  brand_hint: generic
+  category: shoes
+  label_studio_id: 21
+  tags:
+  - running
+  - outdoor
+  - sport
+overlays/shoes-running-17.png:
+  brand_hint: generic
+  category: shoes
+  label_studio_id: 22
+  tags:
+  - running
+  - outdoor
+  - sport
+overlays/shoes-running-18.png:
+  brand_hint: generic
+  category: shoes
+  label_studio_id: 23
+  tags:
+  - running
+  - outdoor
+  - sport
+overlays/shoes-running-19.png:
+  brand_hint: generic
+  category: shoes
+  label_studio_id: 24
+  tags:
+  - running
+  - outdoor
+  - sport
+overlays/shoes-running-20.png:
+  brand_hint: generic
+  category: shoes
+  label_studio_id: 25
+  tags:
+  - running
+  - outdoor
+  - sport
+overlays/shoes-running-21.png:
+  brand_hint: generic
+  category: shoes
+  label_studio_id: 26
+  tags:
+  - running
+  - outdoor
+  - sport
+overlays/shoes-running-22.png:
+  brand_hint: generic
+  category: shoes
+  label_studio_id: 27
+  tags:
+  - running
+  - outdoor
+  - sport
+overlays/shoes-running-23.png:
+  brand_hint: generic
+  category: shoes
+  label_studio_id: 28
+  tags:
+  - running
+  - outdoor
+  - sport
+overlays/shoes-running-24.png:
+  brand_hint: generic
+  category: shoes
+  label_studio_id: 29
+  tags:
+  - running
+  - outdoor
+  - sport
+overlays/shoes-running-25.png:
+  brand_hint: generic
+  category: shoes
+  label_studio_id: 30
+  tags:
+  - running
+  - outdoor
+  - sport
+overlays/shoes-running-26.png:
+  brand_hint: generic
+  category: shoes
+  label_studio_id: 31
+  tags:
+  - running
+  - outdoor
+  - sport
+overlays/shoes-running-27.png:
+  brand_hint: generic
+  category: shoes
+  label_studio_id: 32
+  tags:
+  - running
+  - outdoor
+  - sport
+overlays/shoes-running-28.png:
+  brand_hint: generic
+  category: shoes
+  label_studio_id: 33
+  tags:
+  - running
+  - outdoor
+  - sport
+overlays/shoes-running-29.png:
+  brand_hint: generic
+  category: shoes
+  label_studio_id: 34
+  tags:
+  - running
+  - outdoor
+  - sport
+overlays/shoes-running-30.png:
+  brand_hint: generic
+  category: shoes
+  label_studio_id: 35
+  tags:
+  - running
+  - outdoor
+  - sport
+overlays/shoes-running-31.png:
+  brand_hint: generic
+  category: shoes
+  label_studio_id: 36
+  tags:
+  - running
+  - outdoor
+  - sport
+overlays/shoes-running-32.png:
+  brand_hint: generic
+  category: shoes
+  label_studio_id: 37
+  tags:
+  - running
+  - outdoor
+  - sport
+overlays/shoes-running-33.png:
+  brand_hint: generic
+  category: shoes
+  label_studio_id: 38
+  tags:
+  - running
+  - outdoor
+  - sport
+overlays/shoes-running-34.png:
+  brand_hint: generic
+  category: shoes
+  label_studio_id: 39
+  tags:
+  - running
+  - outdoor
+  - sport
+overlays/shoes-running-35.png:
+  brand_hint: generic
+  category: shoes
+  label_studio_id: 40
+  tags:
+  - running
+  - outdoor
+  - sport
+overlays/shoes-running-36.png:
+  brand_hint: generic
+  category: shoes
+  label_studio_id: 41
+  tags:
+  - running
+  - outdoor
+  - sport
+overlays/shoes-running-37.png:
+  brand_hint: generic
+  category: shoes
+  label_studio_id: 42
+  tags:
+  - running
+  - outdoor
+  - sport
+overlays/shoes-running-38.png:
+  brand_hint: generic
+  category: shoes
+  label_studio_id: 43
+  tags:
+  - running
+  - outdoor
+  - sport
+overlays/shoes-running-39.png:
+  brand_hint: generic
+  category: shoes
+  label_studio_id: 44
+  tags:
+  - running
+  - outdoor
+  - sport
+overlays/shoes-running-40.png:
+  brand_hint: generic
+  category: shoes
+  label_studio_id: 45
+  tags:
+  - running
+  - outdoor
+  - sport
+overlays/shoes-running-41.png:
+  brand_hint: generic
+  category: shoes
+  label_studio_id: 46
+  tags:
+  - running
+  - outdoor
+  - sport
+overlays/shoes-running-42.png:
+  brand_hint: generic
+  category: shoes
+  label_studio_id: 47
+  tags:
+  - running
+  - outdoor
+  - sport
+overlays/shoes-running-43.png:
+  brand_hint: generic
+  category: shoes
+  label_studio_id: 48
+  tags:
+  - running
+  - outdoor
+  - sport
+overlays/shoes-running-44.png:
+  brand_hint: generic
+  category: shoes
+  label_studio_id: 49
+  tags:
+  - running
+  - outdoor
+  - sport
+overlays/shoes-running-45.png:
+  brand_hint: generic
+  category: shoes
+  label_studio_id: 50
+  tags:
+  - running
+  - outdoor
+  - sport
+overlays/shoes-running-46.png:
+  brand_hint: generic
+  category: shoes
+  label_studio_id: 51
+  tags:
+  - running
+  - outdoor
+  - sport
+overlays/shoes-running-47.png:
+  brand_hint: generic
+  category: shoes
+  label_studio_id: 52
+  tags:
+  - running
+  - outdoor
+  - sport
+overlays/shoes-running-48.png:
+  brand_hint: new-balance
+  category: shoes
+  label_studio_id: 2
+  tags:
+  - running
+  - outdoor
+  - sport
+overlays/shoes-running-49.png:
+  brand_hint: new-balance
+  category: shoes
+  label_studio_id: 3
+  tags:
+  - running
+  - wellness
+  - fashion
+overlays/shoes-running-50.png:
+  brand_hint: new-balance
+  category: shoes
+  label_studio_id: 4
+  tags:
+  - outdoor
+  - cycling
+  - sport
+overlays/shoes-running-51.png:
+  brand_hint: skechers
+  category: shoes
+  label_studio_id: 5
+  tags:
+  - running
+  - fashion
+  - wellness
+overlays/wearable-watch-01.png:
+  brand_hint: generic
+  category: wearable
+  label_studio_id: 53
+  tags:
+  - wellness
+  - tech
+  - fitness
+overlays/wearable-watch-02.png:
+  brand_hint: generic
+  category: wearable
+  label_studio_id: 54
+  tags:
+  - wellness
+  - tech
+  - fitness
+overlays/wearable-watch-03.png:
+  brand_hint: generic
+  category: wearable
+  label_studio_id: 55
+  tags:
+  - wellness
+  - tech
+  - fitness
+overlays/wearable-watch-04.png:
+  brand_hint: generic
+  category: wearable
+  label_studio_id: 56
+  tags:
+  - wellness
+  - tech
+  - fitness
+overlays/wearable-watch-05.png:
+  brand_hint: generic
+  category: wearable
+  label_studio_id: 57
+  tags:
+  - wellness
+  - tech
+  - fitness
+overlays/wearable-watch-06.png:
+  brand_hint: generic
+  category: wearable
+  label_studio_id: 58
+  tags:
+  - wellness
+  - tech
+  - fitness
+overlays/wearable-watch-07.png:
+  brand_hint: generic
+  category: wearable
+  label_studio_id: 59
+  tags:
+  - wellness
+  - tech
+  - fitness
+overlays/wearable-watch-08.png:
+  brand_hint: generic
+  category: wearable
+  label_studio_id: 60
+  tags:
+  - wellness
+  - tech
+  - fitness
+overlays/wearable-watch-09.png:
+  brand_hint: generic
+  category: wearable
+  label_studio_id: 61
+  tags:
+  - wellness
+  - tech
+  - fitness
+overlays/wearable-watch-10.png:
+  brand_hint: generic
+  category: wearable
+  label_studio_id: 62
+  tags:
+  - wellness
+  - tech
+  - fitness
+overlays/wearable-watch-11.png:
+  brand_hint: generic
+  category: wearable
+  label_studio_id: 63
+  tags:
+  - wellness
+  - tech
+  - fitness
+overlays/wearable-watch-12.png:
+  brand_hint: generic
+  category: wearable
+  label_studio_id: 64
+  tags:
+  - wellness
+  - tech
+  - fitness
+overlays/wearable-watch-13.png:
+  brand_hint: generic
+  category: wearable
+  label_studio_id: 65
+  tags:
+  - wellness
+  - tech
+  - fitness
+overlays/wearable-watch-14.png:
+  brand_hint: generic
+  category: wearable
+  label_studio_id: 66
+  tags:
+  - wellness
+  - tech
+  - fitness
+overlays/wearable-watch-15.png:
+  brand_hint: generic
+  category: wearable
+  label_studio_id: 67
+  tags:
+  - wellness
+  - tech
+  - fitness
+overlays/wearable-watch-16.png:
+  brand_hint: generic
+  category: wearable
+  label_studio_id: 68
+  tags:
+  - wellness
+  - tech
+  - fitness
+overlays/wearable-watch-17.png:
+  brand_hint: generic
+  category: wearable
+  label_studio_id: 69
+  tags:
+  - wellness
+  - tech
+  - fitness
+overlays/wearable-watch-18.png:
+  brand_hint: generic
+  category: wearable
+  label_studio_id: 70
+  tags:
+  - wellness
+  - tech
+  - fitness
+overlays/wearable-watch-19.png:
+  brand_hint: generic
+  category: wearable
+  label_studio_id: 71
+  tags:
+  - wellness
+  - tech
+  - fitness
+overlays/wearable-watch-20.png:
+  brand_hint: generic
+  category: wearable
+  label_studio_id: 72
+  tags:
+  - wellness
+  - tech
+  - fitness
+overlays/wearable-watch-21.png:
+  brand_hint: generic
+  category: wearable
+  label_studio_id: 73
+  tags:
+  - wellness
+  - tech
+  - fitness
+overlays/wearable-watch-22.png:
+  brand_hint: generic
+  category: wearable
+  label_studio_id: 74
+  tags:
+  - wellness
+  - tech
+  - fitness
+overlays/wearable-watch-23.png:
+  brand_hint: generic
+  category: wearable
+  label_studio_id: 75
+  tags:
+  - wellness
+  - tech
+  - fitness
+overlays/wearable-watch-24.png:
+  brand_hint: generic
+  category: wearable
+  label_studio_id: 76
+  tags:
+  - wellness
+  - tech
+  - fitness
+overlays/wearable-watch-25.png:
+  brand_hint: generic
+  category: wearable
+  label_studio_id: 77
+  tags:
+  - wellness
+  - tech
+  - fitness
+overlays/wearable-watch-26.png:
+  brand_hint: generic
+  category: wearable
+  label_studio_id: 78
+  tags:
+  - wellness
+  - tech
+  - fitness
+overlays/wearable-watch-27.png:
+  brand_hint: generic
+  category: wearable
+  label_studio_id: 79
+  tags:
+  - wellness
+  - tech
+  - fitness
+overlays/wearable-watch-28.png:
+  brand_hint: generic
+  category: wearable
+  label_studio_id: 80
+  tags:
+  - wellness
+  - tech
+  - fitness
+overlays/wearable-watch-29.png:
+  brand_hint: generic
+  category: wearable
+  label_studio_id: 81
+  tags:
+  - wellness
+  - tech
+  - fitness
+overlays/wearable-watch-30.png:
+  brand_hint: generic
+  category: wearable
+  label_studio_id: 82
+  tags:
+  - wellness
+  - tech
+  - fitness
+overlays/wearable-watch-31.png:
+  brand_hint: generic
+  category: wearable
+  label_studio_id: 83
+  tags:
+  - wellness
+  - tech
+  - fitness
+overlays/wearable-watch-32.png:
+  brand_hint: generic
+  category: wearable
+  label_studio_id: 84
+  tags:
+  - wellness
+  - tech
+  - fitness
+overlays/wearable-watch-33.png:
+  brand_hint: generic
+  category: wearable
+  label_studio_id: 85
+  tags:
+  - wellness
+  - tech
+  - fitness
+overlays/wearable-watch-34.png:
+  brand_hint: generic
+  category: wearable
+  label_studio_id: 86
+  tags:
+  - wellness
+  - tech
+  - fitness
+overlays/wearable-watch-35.png:
+  brand_hint: generic
+  category: wearable
+  label_studio_id: 87
+  tags:
+  - wellness
+  - tech
+  - fitness
+overlays/wearable-watch-36.png:
+  brand_hint: generic
+  category: wearable
+  label_studio_id: 88
+  tags:
+  - wellness
+  - tech
+  - fitness
+overlays/wearable-watch-37.png:
+  brand_hint: generic
+  category: wearable
+  label_studio_id: 89
+  tags:
+  - wellness
+  - tech
+  - fitness
+overlays/wearable-watch-38.png:
+  brand_hint: generic
+  category: wearable
+  label_studio_id: 90
+  tags:
+  - wellness
+  - tech
+  - fitness
+overlays/wearable-watch-39.png:
+  brand_hint: generic
+  category: wearable
+  label_studio_id: 91
+  tags:
+  - wellness
+  - tech
+  - fitness
+overlays/wearable-watch-40.png:
+  brand_hint: generic
+  category: wearable
+  label_studio_id: 92
+  tags:
+  - wellness
+  - tech
+  - fitness
+overlays/wearable-watch-41.png:
+  brand_hint: generic
+  category: wearable
+  label_studio_id: 93
+  tags:
+  - wellness
+  - tech
+  - fitness
+overlays/wearable-watch-42.png:
+  brand_hint: generic
+  category: wearable
+  label_studio_id: 94
+  tags:
+  - wellness
+  - tech
+  - fitness
+overlays/wearable-watch-43.png:
+  brand_hint: generic
+  category: wearable
+  label_studio_id: 95
+  tags:
+  - wellness
+  - tech
+  - fitness
+overlays/wearable-watch-44.png:
+  brand_hint: generic
+  category: wearable
+  label_studio_id: 96
+  tags:
+  - wellness
+  - tech
+  - fitness
+overlays/wearable-watch-45.png:
+  brand_hint: generic
+  category: wearable
+  label_studio_id: 97
+  tags:
+  - wellness
+  - tech
+  - fitness
+overlays/wearable-watch-46.png:
+  brand_hint: generic
+  category: wearable
+  label_studio_id: 98
+  tags:
+  - wellness
+  - tech
+  - fitness
+overlays/wearable-watch-47.png:
+  brand_hint: generic
+  category: wearable
+  label_studio_id: 99
+  tags:
+  - wellness
+  - tech
+  - fitness
+overlays/wearable-watch-48.png:
+  brand_hint: generic
+  category: wearable
+  label_studio_id: 100
+  tags:
+  - wellness
+  - tech
+  - fitness
+overlays/wearable-watch-49.png:
+  brand_hint: generic
+  category: wearable
+  label_studio_id: 101
+  tags:
+  - wellness
+  - tech
+  - fitness
+overlays/wearable-watch-50.png:
+  brand_hint: generic
+  category: wearable
+  label_studio_id: 102
+  tags:
+  - wellness
+  - tech
+  - fitness
+overlays/wearable-watch-51.png:
+  brand_hint: generic
+  category: wearable
+  label_studio_id: 103
+  tags:
+  - wellness
+  - tech
+  - fitness
+overlays/wearable-watch-52.png:
+  brand_hint: generic
+  category: wearable
+  label_studio_id: 104
+  tags:
+  - wellness
+  - tech
+  - fitness
+overlays/wearable-watch-53.png:
+  brand_hint: generic
+  category: wearable
+  label_studio_id: 105
+  tags:
+  - wellness
+  - tech
+  - fitness
+overlays/wearable-watch-54.png:
+  brand_hint: generic
+  category: wearable
+  label_studio_id: 106
+  tags:
+  - wellness
+  - tech
+  - fitness
+overlays/wearable-watch-55.png:
+  brand_hint: generic
+  category: wearable
+  label_studio_id: 107
+  tags:
+  - wellness
+  - tech
+  - fitness
+overlays/wearable-watch-56.png:
+  brand_hint: generic
+  category: wearable
+  label_studio_id: 108
+  tags:
+  - wellness
+  - tech
+  - fitness
+overlays/wearable-watch-57.png:
+  brand_hint: generic
+  category: wearable
+  label_studio_id: 109
+  tags:
+  - wellness
+  - tech
+  - fitness
+overlays/wearable-watch-58.png:
+  brand_hint: generic
+  category: wearable
+  label_studio_id: 110
+  tags:
+  - wellness
+  - tech
+  - fitness
+overlays/wearable-watch-59.png:
+  brand_hint: generic
+  category: wearable
+  label_studio_id: 111
+  tags:
+  - wellness
+  - tech
+  - fitness
+overlays/wearable-watch-60.png:
+  brand_hint: generic
+  category: wearable
+  label_studio_id: 112
+  tags:
+  - wellness
+  - tech
+  - fitness
+overlays/wearable-watch-61.png:
+  brand_hint: generic
+  category: wearable
+  label_studio_id: 113
+  tags:
+  - wellness
+  - tech
+  - fitness
+overlays/wearable-watch-62.png:
+  brand_hint: generic
+  category: wearable
+  label_studio_id: 114
+  tags:
+  - wellness
+  - tech
+  - fitness
+overlays/wearable-watch-63.png:
+  brand_hint: generic
+  category: wearable
+  label_studio_id: 115
+  tags:
+  - wellness
+  - tech
+  - fitness
+overlays/wearable-watch-64.png:
+  brand_hint: generic
+  category: wearable
+  label_studio_id: 116
+  tags:
+  - wellness
+  - tech
+  - fitness
+overlays/wearable-watch-65.png:
+  brand_hint: generic
+  category: wearable
+  label_studio_id: 117
+  tags:
+  - wellness
+  - tech
+  - fitness
+overlays/wearable-watch-66.png:
+  brand_hint: generic
+  category: wearable
+  label_studio_id: 118
+  tags:
+  - wellness
+  - tech
+  - fitness
+overlays/wearable-watch-67.png:
+  brand_hint: generic
+  category: wearable
+  label_studio_id: 119
+  tags:
+  - wellness
+  - tech
+  - fitness
+overlays/wearable-watch-68.png:
+  brand_hint: generic
+  category: wearable
+  label_studio_id: 120
+  tags:
+  - wellness
+  - tech
+  - fitness
+overlays/wearable-watch-69.png:
+  brand_hint: generic
+  category: wearable
+  label_studio_id: 121
+  tags:
+  - wellness
+  - tech
+  - fitness
+overlays/wearable-watch-70.png:
+  brand_hint: generic
+  category: wearable
+  label_studio_id: 122
+  tags:
+  - wellness
+  - tech
+  - fitness

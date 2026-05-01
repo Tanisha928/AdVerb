@@ -1,0 +1,20 @@
+app = "adverb-decision-engine"
+primary_region = "iad"
+
+[build]
+  dockerfile = "infra/Dockerfile"
+
+[[services]]
+  internal_port = 8080
+  protocol = "tcp"
+  min_machines_running = 1
+
+  [[services.ports]]
+    port = 443
+    handlers = ["tls", "http"]
+
+[env]
+  TRITON_ADDR          = "localhost:8001"
+  CATALOG_PATH         = "/app/templates/catalog.json"
+  ITEM_EMBEDDINGS_PATH = "/app/item_embeddings.json"
+  R2_PUBLIC_BASE       = "https://pub-XXXX.r2.dev"

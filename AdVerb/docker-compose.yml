@@ -1,0 +1,84 @@
+services:
+  redis:
+    image: redis:7-alpine
+    container_name: adverb-redis
+
+  creative-cache:
+    build:
+      context: ./ml/creative_cache_service
+      dockerfile: Dockerfile
+    container_name: adverb-creative-cache
+    environment:
+      REDIS_URL: redis://redis:6379/0
+      SIMILARITY_THRESHOLD: "0.97"
+      DATA_DIR: /data
+    volumes:
+      - creative-faiss-data:/data
+    depends_on:
+      - redis
+
+  decision-engine:
+    build:
+      context: ./decision-engine
+      dockerfile: Dockerfile
+    container_name: adverb-decision-engine
+    environment:
+      CATALOG_PATH: /app/templates/catalog.json
+      ASSET_INDEX_PATH: /app/asset_index.json
+      QUERY_EMBEDDINGS_PATH: /app/query_embeddings.json
+      R2_PUBLIC_BASE: https://jzpsdwijakybivlmonkj.supabase.co/storage/v1/object/public/adverb-assets
+      REDIS_URL: redis://redis:6379
+    volumes:
+      - ./templates:/app/templates:ro
+    ports:
+      - "8080:8080"
+
+  ui:
+    build:
+      context: ./ui
+      dockerfile: Dockerfile
+    container_name: adverb-ui
+    env_file:
+      - ./.env
+    depends_on:
+      - decision-engine
+      - creative-cache
+    environment:
+      DECISION_ENGINE_URL: http://decision-engine:8080
+      NEBIUS_API_KEY: ${NEBIUS_API_KEY}
+      CREATIVE_CACHE_URL: http://creative-cache:8000
+    ports:
+      - "3100:3000"
+
+  prometheus:
+    image: prom/prometheus:v2.55.1
+    container_name: adverb-prometheus
+    command:
+      - --config.file=/etc/prometheus/prometheus.yml
+      - --storage.tsdb.path=/prometheus
+      - --web.enable-lifecycle
+    volumes:
+      - ./infra/prometheus/prometheus.yml:/etc/prometheus/prometheus.yml:ro
+    ports:
+      - "9090:9090"
+    depends_on:
+      - decision-engine
+      - ui
+
+  grafana:
+    image: grafana/grafana:11.3.2
+    container_name: adverb-grafana
+    ports:
+      - "3200:3000"
+    environment:
+      GF_SECURITY_ADMIN_USER: admin
+      GF_SECURITY_ADMIN_PASSWORD: admin
+      GF_USERS_ALLOW_SIGN_UP: "false"
+    volumes:
+      - ./infra/grafana/provisioning:/etc/grafana/provisioning:ro
+      - ./infra/grafana/dashboards:/var/lib/grafana/dashboards:ro
+    depends_on:
+      - prometheus
+
+volumes:
+  creative-faiss-data:
