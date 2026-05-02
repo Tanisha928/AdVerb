@@ -90,6 +90,10 @@ def _worker_render_variant(payload: tuple) -> dict:
                 product_image_url=product_image_url,
                 brand_logo_url=brand_logo_url,
                 background_variant=i,
+                industry=industry or "",
+                brand_tone=brand_tone,
+                angle=angle_norm,
+                brand_name=brand_name,
             )
         except Exception as exc:  # noqa: BLE001
             last_error = str(exc)
@@ -151,7 +155,7 @@ def generate_creatives(
     if not replicate_service_enabled():
         raise HTTPException(
             status_code=503,
-            detail="HF_API_TOKEN is not configured — set it on brand-api for AI image creatives",
+            detail="Image generation is not available — check brand-api configuration",
         )
     initial_status = campaign.status or "draft"
 

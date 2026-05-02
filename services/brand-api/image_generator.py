@@ -1,4 +1,4 @@
-"""Generate ad creatives via Pollinations, persist to Cloudinary."""
+"""Generate ad creatives: local AdVerb-style palettes, optional Pollinations, Cloudinary."""
 
 from __future__ import annotations
 
@@ -13,6 +13,7 @@ import cloudinary.uploader
 import httpx
 from PIL import Image, ImageFilter
 
+from adverb_creative_gen import render_adverb_background_bytes
 from cloudinary_util import configure
 
 POLLINATIONS_BASE_URL = (
@@ -231,12 +232,41 @@ def generate_ad_image_with_meta(
     product_image_url: str | None = None,
     brand_logo_url: str | None = None,
     background_variant: int | None = None,
+    industry: str | None = None,
+    brand_tone: str | None = None,
+    angle: str | None = None,
+    brand_name: str | None = None,
 ) -> dict[str, int | float | str]:
     plain_bg_only = (os.environ.get("AD_PLAIN_BACKGROUND_ONLY", "true").strip().lower() in ("1", "true", "yes", "on"))
     if plain_bg_only:
         bg_variant = int(background_variant or 0)
         final_bytes = _compose_final(
             background_bytes=_plain_studio_background(width, height, variant=bg_variant),
+            width=width,
+            height=height,
+            product_image_url=product_image_url,
+            brand_logo_url=brand_logo_url,
+        )
+        uploaded = _upload_cloudinary(final_bytes)
+        width_out = int(uploaded.get("width") or 0)
+        height_out = int(uploaded.get("height") or 0)
+        score = _basic_quality_score(width_out, height_out, final_bytes)
+        uploaded["quality_score"] = score
+        return uploaded
+
+    backend = (os.environ.get("AD_IMAGE_BACKEND") or "adverb").strip().lower()
+    if backend != "pollinations":
+        bg_bytes = render_adverb_background_bytes(
+            width,
+            height,
+            industry=industry or "",
+            brand_tone=brand_tone,
+            angle=angle,
+            brand_name=brand_name or "",
+            seed=seed,
+        )
+        final_bytes = _compose_final(
+            background_bytes=bg_bytes,
             width=width,
             height=height,
             product_image_url=product_image_url,
