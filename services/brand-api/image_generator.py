@@ -1,4 +1,4 @@
-"""Generate ad creatives: local AdVerb-style palettes, optional Pollinations, Cloudinary."""
+"""Generate ad creatives: Pollinations or local PIL backdrops, Cloudinary upload."""
 
 from __future__ import annotations
 
@@ -254,7 +254,8 @@ def generate_ad_image_with_meta(
         uploaded["quality_score"] = score
         return uploaded
 
-    backend = (os.environ.get("AD_IMAGE_BACKEND") or "adverb").strip().lower()
+    # Default Pollinations for demo parity with documented image pipeline; set AD_IMAGE_BACKEND=adverb for local-only PIL.
+    backend = (os.environ.get("AD_IMAGE_BACKEND") or "pollinations").strip().lower()
     if backend != "pollinations":
         bg_bytes = render_adverb_background_bytes(
             width,

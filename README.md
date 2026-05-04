@@ -1,14 +1,16 @@
-# AdaptAI
+# adverb (AdaptAI)
 
-Distributed creative intelligence platform for coursework demos: brand portal, personalized feed, and admin analytics — all wired through PostgreSQL, Redis Streams, and FastAPI services.
+Distributed creative intelligence platform for demos: brand portal, personalized feed, and admin analytics — wired through PostgreSQL, Redis Streams, and FastAPI services.
 
 ## Quick start
 
-1. Copy environment variables and add API keys (Groq + Cloudinary are required for **generating** new creatives; the seeded DB runs demos without them).
+1. Copy environment variables and add API keys.
+   - **Brand portal creative generation**: `GROQ_API_KEY` (ad copy), **Cloudinary** credentials (upload composed creatives). For **AI backgrounds** (not the default plain studio mode), set `AD_PLAIN_BACKGROUND_ONLY=false` and allow outbound HTTPS to **Pollinations**; optional `AD_IMAGE_BACKEND=adverb` uses local PIL only (no image API).
+   - Seeded data still runs demo serving without generation keys.
 
 ```bash
 cp .env.example .env
-# Edit .env — set GROQ_API_KEY and Cloudinary credentials for AI + uploads
+# Edit .env — at minimum GROQ_API_KEY + Cloudinary for generate-creatives
 ```
 
 2. Build and run everything:
@@ -29,7 +31,32 @@ docker compose up --build
 
 Backends: PostgreSQL on host **`localhost:5433`**, Redis on host **`localhost:6380`** (in-cluster services use `redis:6379` and `postgres:5432` unchanged).
 
-## Architecture (ASCII)
+## Full platform layout (code + docs)
+
+The repo includes the **edge + Go + ML** recommendation stack **and** the **AdaptAI** Python product:
+
+| Area | Path |
+|------|------|
+| Go decision engine | `decision-engine/` |
+| ML / embeddings / FAISS cache service | `ml/` |
+| Cloudflare Worker (edge) | `edge-worker/` |
+| Template catalog | `templates/` |
+| Brand + serving + analytics | `services/`, `apps/` |
+
+**How it fits together** (diagrams, hot path vs demo path): **[`ARCHITECTURE.md`](./ARCHITECTURE.md)**.
+
+Optional: start the Go service and FAISS cache **next to** the main stack (shared Redis, separate DB indexes):
+
+```bash
+docker compose --profile recommendation-stack up --build
+```
+
+- Decision engine: `http://localhost:8080/health`
+- Creative cache: `http://localhost:8001/health`
+
+The brand portal **does not** call these by default; they demonstrate the architecture and support the reference UI under `AdVerb/ui/`.
+
+## Architecture (ASCII) — demo product
 
 ```
 ┌─────────────┐   ┌─────────────┐   ┌─────────────┐
@@ -55,11 +82,30 @@ Backends: PostgreSQL on host **`localhost:5433`**, Redis on host **`localhost:63
               (streams, MAB state, cache)
 ```
 
+## What’s implemented now
+
+- **Brand workflow updates**
+  - Creative cards that are already reviewed now show status instead of showing Approve/Reject again.
+  - Campaign page supports generating creatives for already-added products (including per-product generate action).
+  - If a campaign is already live and you generate creatives for a new product, it returns to `live` after generation (does not get stuck in review).
+
+- **Personalized feed updates**
+  - Feed API accepts interest categories and uses user-interest/category matching in scoring.
+  - Per-user click history is stored in Redis (`user_clicks:{user_id}`) and boosts campaign ranking.
+  - User profile local interest edits are used by the feed request path.
+
+- **Brand analytics fix**
+  - Brand-level impressions/clicks are aggregated from `ad_events` (event pipeline), not stale creative counters.
+
+- **Frontend naming**
+  - User-visible frontend branding is updated to **adverb**.
+
 ## Distributed systems concepts (where they appear)
 
 - **Event-driven pipeline**: Ad Serving writes impressions/clicks to a Redis Stream (`ad_events`); the Analytics Worker consumes asynchronously and persists to PostgreSQL and updates Redis aggregates — *decoupling* producers from storage.
 - **Caching & latency**: User profiles, live campaigns, and “last served” creative are cached in Redis; `/serve-ad` logs `perf_counter` latency and exposes p50/p95 to the admin UI — *read-through / TTL caching* on the hot path.
 - **Online learning**: Epsilon-greedy MAB over creative variants with weights in Redis hashes; history appended for dashboard charts — *explore/exploit* without batch training.
+- **Personalization memory**: Per-user campaign click history (`user_clicks:{user_id}`) influences ranking in `score_campaigns` — *session-to-session preference adaptation*.
 - **Fatigue / suppression**: Per-user per-creative view counts in Redis (`seen:user:creative`) — *rate limiting* style guardrails.
 - **Container orchestration**: One compose stack; services scale independently in principle (stateless APIs + shared Redis/Postgres).
 

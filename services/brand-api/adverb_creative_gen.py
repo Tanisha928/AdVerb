@@ -1,4 +1,4 @@
-"""Local generative backgrounds ported from AdVerb (AdVerb/ui + AdVerb/ml).
+"""Local generative backgrounds (palette logic from reference UI + solid catalog in ml/)."""
 
 Uses deterministic palette selection and PIL gradients only — no Pollinations,
 picsum, or other third-party image APIs.
@@ -10,7 +10,7 @@ from io import BytesIO
 
 from PIL import Image, ImageDraw
 
-# Named solid backdrops from AdVerb/ml/generate_backgrounds.py (optional accent blend).
+# Named solid backdrops from ml/generate_backgrounds.py (optional accent blend).
 NAMED_BACKDROPS: list[tuple[str, tuple[int, int, int]]] = [
     ("black", (10, 10, 10)),
     ("white", (255, 255, 255)),
@@ -30,7 +30,7 @@ def _hex_to_rgb(h: str) -> tuple[int, int, int]:
     return int(h[0:2], 16), int(h[2:4], 16), int(h[4:6], 16)
 
 
-# Palettes from AdVerb/ui/src/lib/aiImageGenerator.ts (categoryPalettes + defaults).
+# Palettes from reference AdVerb UI (categoryPalettes + defaults).
 _CATEGORY_PALETTES: dict[str, list[dict[str, str]]] = {
     "shoes": [
         {"start": "#1d4ed8", "end": "#38bdf8", "accent": "#facc15", "ink": "#0f172a"},
@@ -205,7 +205,7 @@ def render_adverb_background_bytes(
     img = _vertical_gradient_rgb(width, height, top, bottom)
     img = _accent_radial_soft(img, accent, palette_seed)
 
-    # Blend a sliver of catalog solid (AdVerb/ml/generate_backgrounds.py) for variety.
+    # Blend a sliver of catalog solid (ml/generate_backgrounds.py) for variety.
     tint = _named_backdrop_tint(palette_seed ^ seed_val)
     tint_layer = Image.new("RGB", (width, height), tint)
     img = Image.blend(img, tint_layer, alpha=0.08)

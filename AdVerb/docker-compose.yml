@@ -5,9 +5,11 @@ services:
 
   creative-cache:
     build:
-      context: ./ml/creative_cache_service
+      context: ../ml/creative_cache_service
       dockerfile: Dockerfile
     container_name: adverb-creative-cache
+    ports:
+      - "8001:8000"
     environment:
       REDIS_URL: redis://redis:6379/0
       SIMILARITY_THRESHOLD: "0.97"
@@ -19,7 +21,7 @@ services:
 
   decision-engine:
     build:
-      context: ./decision-engine
+      context: ../decision-engine
       dockerfile: Dockerfile
     container_name: adverb-decision-engine
     environment:
@@ -29,9 +31,11 @@ services:
       R2_PUBLIC_BASE: https://jzpsdwijakybivlmonkj.supabase.co/storage/v1/object/public/adverb-assets
       REDIS_URL: redis://redis:6379
     volumes:
-      - ./templates:/app/templates:ro
+      - ../templates:/app/templates:ro
     ports:
       - "8080:8080"
+    depends_on:
+      - redis
 
   ui:
     build:
