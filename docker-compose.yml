@@ -45,6 +45,41 @@ services:
       # Host 6380 if :6379 is already in use; containers still use redis:6379.
       - "6380:6379"
 
+  # Go + FAISS reference stack (not used by brand-api / ad-serving hot path).
+  decision-engine:
+    profiles: ["recommendation-stack"]
+    build: ./decision-engine
+    ports:
+      - "8080:8080"
+    environment:
+      CATALOG_PATH: /app/templates/catalog.json
+      ASSET_INDEX_PATH: /app/asset_index.json
+      QUERY_EMBEDDINGS_PATH: /app/query_embeddings.json
+      R2_PUBLIC_BASE: ${R2_PUBLIC_BASE:-https://pub-XXXX.r2.dev}
+      REDIS_URL: redis://redis:6379/2
+    volumes:
+      - ./templates:/app/templates:ro
+    depends_on:
+      redis:
+        condition: service_started
+
+  creative-cache-service:
+    profiles: ["recommendation-stack"]
+    build:
+      context: ./ml/creative_cache_service
+      dockerfile: Dockerfile
+    ports:
+      - "8001:8000"
+    environment:
+      REDIS_URL: redis://redis:6379/3
+      SIMILARITY_THRESHOLD: "0.97"
+      DATA_DIR: /data
+    volumes:
+      - creative_faiss_data:/data
+    depends_on:
+      redis:
+        condition: service_started
+
   brand-api:
     build: ./services/brand-api
     ports:
@@ -68,6 +103,8 @@ services:
       AD_CREATIVE_VARIANT_ATTEMPTS: ${AD_CREATIVE_VARIANT_ATTEMPTS:-1}
       AD_CREATIVE_VARIANT_COUNT: ${AD_CREATIVE_VARIANT_COUNT:-3}
       AD_PLAIN_BACKGROUND_ONLY: ${AD_PLAIN_BACKGROUND_ONLY:-true}
+      # pollinations (default) | adverb (local PIL gradients, no image API)
+      AD_IMAGE_BACKEND: ${AD_IMAGE_BACKEND:-pollinations}
       POLLINATIONS_MAX_RETRIES: ${POLLINATIONS_MAX_RETRIES:-2}
       POLLINATIONS_RETRY_BASE_SECONDS: ${POLLINATIONS_RETRY_BASE_SECONDS:-0.8}
       POLLINATIONS_RETRY_JITTER_SECONDS: ${POLLINATIONS_RETRY_JITTER_SECONDS:-0.1}
@@ -180,3 +217,4 @@ volumes:
   rabbitmq_data:
   prometheus_data:
   grafana_data:
+  creative_faiss_data:
