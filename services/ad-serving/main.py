@@ -101,6 +101,40 @@ async def fetch_fallback_creative() -> dict | None:
     return d
 
 
+async def fetch_interest_matched_creative(interests: list[str], exclude_ids: set[str]) -> dict | None:
+    if not pool:
+        return None
+    if not interests:
+        return await fetch_fallback_creative()
+    async with pool.acquire() as conn:
+        row = await conn.fetchrow(
+            """
+            SELECT c.id, c.headline, c.subheadline, c.cta, c.angle, c.layout,
+                   c.background_color, c.assembled_image_url, c.campaign_id,
+                   p.image_url as product_image_url,
+                   b.name as brand_name, b.logo_url as brand_logo_url, b.color_primary
+            FROM creatives c
+            JOIN products p ON p.id = c.product_id
+            JOIN campaigns ca ON ca.id = c.campaign_id
+            JOIN brands b ON b.id = ca.brand_id
+            WHERE c.status = 'approved'
+              AND ca.status = 'live'
+              AND (b.target_interests && $1::text[])
+            ORDER BY ca.created_at DESC, c.created_at DESC
+            LIMIT 20
+            """,
+            interests,
+        )
+    if not row:
+        return None
+    d = dict(row)
+    d["id"] = str(d["id"])
+    d["campaign_id"] = str(d["campaign_id"])
+    if d["id"] in exclude_ids:
+        return None
+    return d
+
+
 async def get_user_cached(user_id: str) -> dict | None:
     assert rds and pool
     key = f"user:{user_id}"
@@ -318,6 +352,16 @@ async def track_click(body: TrackBody):
 async def user_feed(user_id: str):
     out: list[dict] = []
     seen_ids: set[str] = set()
+    user = await get_user_cached(user_id) if (pool and rds) else None
+    interests = list((user or {}).get("interests") or [])
+
+    # Ensure at least one interest-matched live campaign appears when available.
+    if interests:
+        lead = await fetch_interest_matched_creative(interests, seen_ids)
+        if lead and lead.get("id"):
+            seen_ids.add(lead["id"])
+            out.append(lead)
+
     cats = ["coffee", "fitness", "beauty", "tech", "travel", "gaming", "food", "fashion"]
     for i in range(20):
         if len(out) >= 10:
