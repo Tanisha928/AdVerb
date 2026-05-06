@@ -1,0 +1,117 @@
+services:
+  postgres:
+    # Use 16+ if your local volume was first created with PG16; else 15 is fine.
+    image: postgres:16-alpine
+    environment:
+      POSTGRES_DB: adaptai
+      POSTGRES_USER: adaptai
+      POSTGRES_PASSWORD: adaptai_secret
+    volumes:
+      - ./db/init.sql:/docker-entrypoint-initdb.d/init.sql
+      - postgres_data:/var/lib/postgresql/data
+    ports:
+      # Host :5433 avoids conflict with a local Postgres on :5432; containers still use postgres:5432.
+      - "5433:5432"
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U adaptai -d adaptai"]
+      interval: 3s
+      timeout: 5s
+      retries: 20
+      start_period: 15s
+
+  redis:
+    image: redis:7-alpine
+    command: redis-server --appendonly yes
+    volumes:
+      - redis_data:/data
+    ports:
+      # Host 6380 if :6379 is already in use; containers still use redis:6379.
+      - "6380:6379"
+
+  brand-api:
+    build: ./services/brand-api
+    ports:
+      # Host 8800 (change if in use on your machine).
+      - "8800:8000"
+    environment:
+      DATABASE_URL: postgresql://adaptai:adaptai_secret@postgres:5432/adaptai
+      REDIS_URL: redis://redis:6379
+      GROQ_API_KEY: ${GROQ_API_KEY:-}
+      GROQ_MODEL: ${GROQ_MODEL:-}
+      CLOUDINARY_CLOUD_NAME: ${CLOUDINARY_CLOUD_NAME:-}
+      CLOUDINARY_API_KEY: ${CLOUDINARY_API_KEY:-}
+      CLOUDINARY_API_SECRET: ${CLOUDINARY_API_SECRET:-}
+      OPENAI_API_KEY: ${OPENAI_API_KEY:-}
+      AD_AI_SCENES: ${AD_AI_SCENES:-}
+      AD_SCENE_IMAGE_SIZE: ${AD_SCENE_IMAGE_SIZE:-}
+      AD_SCENE_IMAGE_MODEL: ${AD_SCENE_IMAGE_MODEL:-}
+      HF_API_TOKEN: ${HF_API_TOKEN:-}
+      HF_INFERENCE_ORIGIN: ${HF_INFERENCE_ORIGIN:-}
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_started
+
+  ad-serving:
+    build: ./services/ad-serving
+    ports:
+      # Host 8801 (change if in use on your machine).
+      - "8801:8001"
+    environment:
+      DATABASE_URL: postgresql://adaptai:adaptai_secret@postgres:5432/adaptai
+      REDIS_URL: redis://redis:6379
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_started
+
+  analytics-worker:
+    build: ./services/analytics-worker
+    environment:
+      DATABASE_URL: postgresql://adaptai:adaptai_secret@postgres:5432/adaptai
+      REDIS_URL: redis://redis:6379
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_started
+    restart: always
+
+  brand-portal:
+    build:
+      context: ./apps/brand-portal
+      args:
+        NEXT_PUBLIC_BRAND_API_URL: http://localhost:8800
+    ports:
+      # Host 3000 is often taken; map 3010 → app :3000 (container still listens on 3000).
+      - "3010:3000"
+    environment:
+      NEXT_PUBLIC_BRAND_API_URL: http://localhost:8800
+      BRAND_API_URL: http://brand-api:8000
+
+  user-feed:
+    build:
+      context: ./apps/user-feed
+      args:
+        NEXT_PUBLIC_AD_SERVING_URL: http://localhost:8801
+    ports:
+      - "3001:3000"
+    environment:
+      NEXT_PUBLIC_AD_SERVING_URL: http://localhost:8801
+
+  admin:
+    build:
+      context: ./apps/admin
+      args:
+        NEXT_PUBLIC_AD_SERVING_URL: http://localhost:8801
+    ports:
+      - "3002:3000"
+    environment:
+      NEXT_PUBLIC_AD_SERVING_URL: http://localhost:8801
+      AD_SERVING_INTERNAL_URL: http://ad-serving:8001
+
+volumes:
+  postgres_data:
+  redis_data:
