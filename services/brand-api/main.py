@@ -4,7 +4,7 @@ from prometheus_fastapi_instrumentator import Instrumentator
 
 from routers import brands, campaigns, products, creatives
 
-app = FastAPI(title="AdaptAI Brand API", version="1.0.0")
+app = FastAPI(title="adverb Brand API", version="1.0.0")
 
 # Any localhost / 127.0.0.1 port (e.g. brand portal on 3010 in Docker) — dev-friendly for coursework
 _LOCAL_ORIGIN = r"https?://(localhost|127\.0\.0\.1)(:\d+)?$"

@@ -28,7 +28,7 @@ async def create_brand(
     logo_url = None
     if logo and logo.filename:
         body = await logo.read()
-        logo_url = upload_file(body, folder="adaptai/brands", public_id_prefix="logo")
+        logo_url = upload_file(body, folder="adverb/brands", public_id_prefix="logo")
 
     interests = [s.strip() for s in target_interests.split(",") if s.strip()]
     brand = Brand(

@@ -1,5 +1,5 @@
 groups:
-  - name: AdVerb-api-alerts
+  - name: adverb-api-alerts
     rules:
       - alert: HighApiErrorRate
         expr: |

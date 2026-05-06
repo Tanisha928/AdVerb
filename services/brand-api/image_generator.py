@@ -30,7 +30,7 @@ def _upload_cloudinary(image_data: bytes) -> dict[str, int | str]:
     configure()
     res = cloudinary.uploader.upload(
         BytesIO(image_data),
-        folder="adaptai/ai-creatives",
+        folder="adverb/ai-creatives",
         resource_type="image",
         use_filename=False,
         unique_filename=True,
@@ -67,82 +67,6 @@ def _contain_size(src_w: int, src_h: int, max_w: int, max_h: int) -> tuple[int, 
     out_w = max(1, int(src_w * ratio))
     out_h = max(1, int(src_h * ratio))
     return out_w, out_h
-
-
-def _plain_studio_background(width: int, height: int, variant: int = 0) -> bytes:
-    # Deterministic premium plain studio backgrounds (no objects/products), inspired by reference styles.
-    v = variant % 3
-    if v == 0:
-        # Warm beige sweep with smooth wave at lower area.
-        top, bottom = (245, 230, 208), (221, 188, 150)
-        bg = Image.new("RGB", (width, height), top)
-        pix = bg.load()
-        for y in range(height):
-            t = y / max(1, height - 1)
-            r = int(top[0] * (1 - t) + bottom[0] * t)
-            g = int(top[1] * (1 - t) + bottom[1] * t)
-            b = int(top[2] * (1 - t) + bottom[2] * t)
-            for x in range(width):
-                pix[x, y] = (r, g, b)
-        wave = Image.new("RGBA", (width, height), (255, 245, 225, 0))
-        wpix = wave.load()
-        for y in range(height):
-            curve = int(height * 0.70 + 18 * ((y / max(1, height)) - 0.5))
-            alpha = 90 if y > curve else 0
-            for x in range(width):
-                if y > int(height * 0.74 + 26 * ((x / max(1, width)) - 0.5)):
-                    wpix[x, y] = (252, 240, 220, alpha)
-        out = Image.alpha_composite(bg.convert("RGBA"), wave).convert("RGB")
-    elif v == 1:
-        # Dark premium stage with soft top spotlight beam.
-        top, bottom = (34, 37, 42), (18, 20, 24)
-        bg = Image.new("RGB", (width, height), top)
-        pix = bg.load()
-        for y in range(height):
-            t = y / max(1, height - 1)
-            r = int(top[0] * (1 - t) + bottom[0] * t)
-            g = int(top[1] * (1 - t) + bottom[1] * t)
-            b = int(top[2] * (1 - t) + bottom[2] * t)
-            for x in range(width):
-                pix[x, y] = (r, g, b)
-        beam = Image.new("RGBA", (width, height), (255, 255, 255, 0))
-        bpix = beam.load()
-        for y in range(height):
-            for x in range(width):
-                dx = abs(x - int(width * 0.68))
-                dy = y
-                if dy < int(height * 0.65):
-                    taper = max(1, int(8 + dy * 0.9))
-                    if dx < taper:
-                        alpha = max(0, int(105 * (1 - dx / taper) * (1 - dy / (height * 0.72))))
-                        bpix[x, y] = (255, 255, 245, alpha)
-        out = Image.alpha_composite(bg.convert("RGBA"), beam).convert("RGB")
-    else:
-        # Cool geometric studio wall gradient.
-        top, bottom = (215, 225, 234), (66, 76, 88)
-        bg = Image.new("RGB", (width, height), top)
-        pix = bg.load()
-        for y in range(height):
-            t = y / max(1, height - 1)
-            r = int(top[0] * (1 - t) + bottom[0] * t)
-            g = int(top[1] * (1 - t) + bottom[1] * t)
-            b = int(top[2] * (1 - t) + bottom[2] * t)
-            for x in range(width):
-                pix[x, y] = (r, g, b)
-        panel = Image.new("RGBA", (width, height), (255, 255, 255, 0))
-        ppix = panel.load()
-        split = int(width * 0.36)
-        for y in range(height):
-            for x in range(width):
-                if x < split:
-                    ppix[x, y] = (235, 242, 248, 120)
-                elif split <= x < split + int(width * 0.06):
-                    ppix[x, y] = (190, 203, 215, 95)
-        out = Image.alpha_composite(bg.convert("RGBA"), panel).convert("RGB")
-
-    buffer = BytesIO()
-    out.save(buffer, format="WEBP", quality=92)
-    return buffer.getvalue()
 
 
 def _compose_final(
@@ -237,24 +161,8 @@ def generate_ad_image_with_meta(
     angle: str | None = None,
     brand_name: str | None = None,
 ) -> dict[str, int | float | str]:
-    plain_bg_only = (os.environ.get("AD_PLAIN_BACKGROUND_ONLY", "true").strip().lower() in ("1", "true", "yes", "on"))
-    if plain_bg_only:
-        bg_variant = int(background_variant or 0)
-        final_bytes = _compose_final(
-            background_bytes=_plain_studio_background(width, height, variant=bg_variant),
-            width=width,
-            height=height,
-            product_image_url=product_image_url,
-            brand_logo_url=brand_logo_url,
-        )
-        uploaded = _upload_cloudinary(final_bytes)
-        width_out = int(uploaded.get("width") or 0)
-        height_out = int(uploaded.get("height") or 0)
-        score = _basic_quality_score(width_out, height_out, final_bytes)
-        uploaded["quality_score"] = score
-        return uploaded
-
-    # Default Pollinations for demo parity with documented image pipeline; set AD_IMAGE_BACKEND=adverb for local-only PIL.
+    # Always use Pollinations (default) or local PIL (`AD_IMAGE_BACKEND=adverb`); no plain-background shortcut.
+    # Default Pollinations; set AD_IMAGE_BACKEND=adverb for local-only PIL gradients.
     backend = (os.environ.get("AD_IMAGE_BACKEND") or "pollinations").strip().lower()
     if backend != "pollinations":
         bg_bytes = render_adverb_background_bytes(

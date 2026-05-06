@@ -9,6 +9,6 @@ cd decision-engine
 go build -o decision-engine ./cmd/server
 ```
 
-Docker: use **`docker compose --profile recommendation-stack`** from the repository root, or **`AdVerb/docker-compose.yml`** with the reference UI.
+Docker: **`docker compose --profile recommendation-stack`** from the repository root.
 
 System context: **[`../ARCHITECTURE.md`](../ARCHITECTURE.md)**.

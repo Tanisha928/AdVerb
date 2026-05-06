@@ -1,9 +1,9 @@
 apiVersion: 1
 
 providers:
-  - name: AdVerb Dashboards
+  - name: adverb dashboards
     orgId: 1
-    folder: AdVerb
+    folder: adverb
     type: file
     disableDeletion: false
     updateIntervalSeconds: 30

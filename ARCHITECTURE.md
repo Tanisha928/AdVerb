@@ -1,81 +1,37 @@
-# System architecture
+# adverb — system architecture
 
-This repository implements a **layered ad-tech stack**: real-time recommendation and creative assembly (Go, ML, edge), plus a **brand and campaign platform** (Python) and **serving / analytics** (Python, Redis streams).
+This document expands on the root **README**: how the **recommendation plane** (edge, Go, ML) relates to the **product plane** (FastAPI, Postgres, serving).
 
-## Logical pipeline (full stack)
+## Recommendation plane
 
-```text
-┌─────────────────────────────────────────────────────────────────────────┐
-│  Edge: Cloudflare Worker (`edge-worker/`)                                │
-│  POST /ad  ·  KV cache  ·  regional routing  ·  Workers AI copy guard    │
-└───────────────────────────────┬─────────────────────────────────────────┘
-                                │ cache miss
-                                ▼
-┌─────────────────────────────────────────────────────────────────────────┐
-│  Decision engine: Go (`decision-engine/`)                                │
-│  POST /recommend  ·  template + overlay scoring  ·  UCB / engagement     │
-│  CLIP-style dot products over precomputed asset & query embeddings       │
-└───────────────┬───────────────────────────────┬─────────────────────────┘
-                │                               │
-                ▼                               ▼
-┌───────────────────────────┐     ┌─────────────────────────────────────────┐
-│  ML (`ml/`)               │     │  Template catalog (`templates/`)        │
-│  Offline embeddings,      │     │  JSON catalog + asset keys              │
-│  filters, ONNX export;    │     │  Mounted into decision-engine image     │
-│  FAISS cache service      │     │                                         │
-└───────────────────────────┘     └─────────────────────────────────────────┘
-```
+1. **`edge-worker/`** (Cloudflare Worker) accepts `POST /ad`, checks **KV** for a cached creative, optionally routes to a regional origin, and on miss calls the Go service.
+2. **`decision-engine/`** (Go) exposes `POST /recommend` (and engagement endpoints). It loads **`templates/catalog.json`**, **`asset_index.json`**, and **`query_embeddings.json`**, scores overlays with dot-product similarity, and can blend **UCB** statistics from Redis.
+3. **`ml/`** holds offline tooling (embedding scripts, filters) and **`ml/creative_cache_service/`** — a small FastAPI app backed by **FAISS** + Redis for “similar user → reuse creative” experiments.
+4. **`templates/`** is the catalog volume mounted into the decision-engine container.
 
-Optional **user embedding** service (e.g. Triton) sits upstream of scoring in deployments that use live user vectors; the Go service consumes fixed `query_embeddings.json` for demos.
+Deploy the Worker with **Wrangler**; it is not started by the root `docker compose` file.
 
-## Demo runtime (AdaptAI / adverb product)
+## Product plane (default compose)
 
-The **default Docker Compose** stack (`docker compose up` at repo root) runs the **brand portal + feed + admin** product:
+When you run **`docker compose up`** from the repository root:
 
-- **brand-api** (FastAPI): brands, campaigns, products, creative generation.
-- **ad-serving** (FastAPI): personalized feed, MAB, Redis stream events.
-- **analytics-worker**: consumes `ad_events`, writes PostgreSQL aggregates.
-- **PostgreSQL + Redis + RabbitMQ** as in `docker-compose.yml`.
+- **`brand-api`** manages brands, campaigns, products, and **creative generation** (Groq copy + Pollinations or local PIL backgrounds + Cloudinary).
+- **`ad-serving`** serves ads to the user feed, maintains **MAB** weights in Redis, and appends **Redis stream** events.
+- **`analytics-worker`** consumes `ad_events` and updates PostgreSQL (and Redis aggregates where applicable).
 
-### Creative generation on that path (current default)
+The brand portal **does not** HTTP-call the Go decision engine in this layout; the Go service is the architectural sibling used for RTB-style demos and optional `recommendation-stack` profile.
 
-1. **Copy**: Groq (`GROQ_API_KEY`) produces headline / subheadline / CTA variants.
-2. **Image**: When `AD_PLAIN_BACKGROUND_ONLY` is **false**, backgrounds are fetched from **Pollinations** (`image.pollinations.ai`), then composed with product and logo and uploaded to **Cloudinary**. When **true** (compose default), backgrounds are **local PIL** “studio” plates (no third-party image API).
+## Compose profiles
 
-3. **Recommendation stack** (Go + FAISS cache + reference UI) is **not** on the hot path for that compose file; it ships in-repo for the architecture above and can be run separately (see below).
+| Command | What starts |
+|---------|-------------|
+| `docker compose up --build` | Postgres, Redis, RabbitMQ, brand-api, ad-serving, analytics-worker, frontends, Prometheus, Grafana |
+| `docker compose --profile recommendation-stack up --build` | Above **plus** `decision-engine` (:8080) and `creative-cache-service` (:8001) |
 
-## Running the Go + ML reference stack
+## Creative image pipeline (brand-api)
 
-From `AdVerb/` (legacy RTB-style UI against the decision engine):
+- **Copy**: Groq (`GROQ_API_KEY`).
+- **Raster background**: **Pollinations** by default (`AD_IMAGE_BACKEND` unset or `pollinations`). Alternative: `AD_IMAGE_BACKEND=adverb` uses **`adverb_creative_gen`** (local PIL, no third-party image HTTP).
+- **Composite**: Product image + logo fetched over HTTPS, composed in Pillow, uploaded to Cloudinary under `adverb/…` folders.
 
-```bash
-cd AdVerb
-docker compose up --build
-```
-
-- Reference UI: `http://localhost:3100` (mapped from container `:3000`)
-- Decision engine: `http://localhost:8080/health`
-- Creative cache (FAISS): `http://localhost:8001/health`
-
-Root compose can also start the Go service beside the main stack:
-
-```bash
-docker compose --profile recommendation-stack up --build
-```
-
-See `docker-compose.yml` for the `recommendation-stack` profile (decision-engine + shared Redis).
-
-## Repository map
-
-| Path | Role |
-|------|------|
-| `decision-engine/` | Go HTTP `/recommend`, `/click`, metrics |
-| `ml/` | Python tooling: embeddings, filters, FAISS cache service Dockerfile |
-| `edge-worker/` | Cloudflare Worker (TypeScript): `/ad`, cache, Workers AI |
-| `templates/` | Catalog JSON consumed by decision-engine |
-| `services/brand-api/` | FastAPI brand + creative generation |
-| `services/ad-serving/` | FastAPI serving + MAB |
-| `services/analytics-worker/` | Stream consumer |
-| `AdVerb/ui/` | Next.js reference client for latency / simulation |
-
-This split keeps **production-style demos** (Python stack) and **edge + Go reference** (sub-100 ms path) both visible in one GitHub project.
+There is **no** “plain background only” shortcut in code: every generated creative goes through the Pollinations or local-PIL branch.

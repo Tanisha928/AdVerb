@@ -1,8 +1,8 @@
 {
   "id": null,
-  "uid": "AdVerb-overview",
-  "title": "AdVerb API Overview",
-  "tags": ["AdVerb", "api", "prometheus"],
+  "uid": "adverb-api-overview",
+  "title": "adverb API overview",
+  "tags": ["adverb", "api", "prometheus"],
   "timezone": "browser",
   "schemaVersion": 39,
   "version": 1,

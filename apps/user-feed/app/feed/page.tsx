@@ -13,11 +13,11 @@ export default function FeedPage() {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    const id = typeof window !== "undefined" ? localStorage.getItem("adaptai_user_id") : null;
+    const id = typeof window !== "undefined" ? localStorage.getItem("adverb_user_id") : null;
     setUserId(id);
     if (id) {
       try {
-        const localInterests = JSON.parse(localStorage.getItem(`adaptai_interests_${id}`) || "[]") as string[];
+        const localInterests = JSON.parse(localStorage.getItem(`adverb_interests_${id}`) || "[]") as string[];
         const normalized = localInterests.map((v) => v.trim()).filter(Boolean);
         if (normalized.length > 0) {
           setEffectiveInterests(normalized);

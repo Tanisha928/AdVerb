@@ -30,7 +30,7 @@ INDEX_PATH = os.path.join(DATA_DIR, "creative_faiss.index")
 META_PATH = os.path.join(DATA_DIR, "creative_faiss_ids.json")
 
 r = redis.Redis.from_url(REDIS_URL, decode_responses=True)
-app = FastAPI(title="AdVerb FAISS Creative Cache", version="1.0.0")
+app = FastAPI(title="adverb FAISS Creative Cache", version="1.0.0")
 
 index = faiss.IndexFlatIP(DIM)
 id_list: list[str] = []
