@@ -104,3 +104,7 @@ class CreativeOut(BaseModel):
 class CreativeReview(BaseModel):
     status: str
     rejection_note: Optional[str] = None
+
+
+class CreativeGenerateRequest(BaseModel):
+    product_id: UUID

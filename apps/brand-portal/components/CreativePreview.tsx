@@ -24,7 +24,11 @@ export function CreativePreview({
   const useCss = !assembledUrl || assembledUrl === imageUrl;
   if (!useCss && assembledUrl) {
     // eslint-disable-next-line @next/next/no-img-element
-    return <img src={assembledUrl} alt="" className="h-48 w-full object-cover rounded-lg" />;
+    return (
+      <a href={assembledUrl} target="_blank" rel="noreferrer" className="block h-48 w-full rounded-lg bg-slate-50">
+        <img src={assembledUrl} alt="Generated ad creative" className="h-48 w-full object-contain rounded-lg" />
+      </a>
+    );
   }
   const align =
     layout === "centered"
