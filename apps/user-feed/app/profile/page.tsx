@@ -12,12 +12,12 @@ export default function ProfilePage() {
   const [history, setHistory] = useState<ClickRow[]>([]);
 
   useEffect(() => {
-    const id = localStorage.getItem("adaptai_user_id");
+    const id = localStorage.getItem("adverb_user_id");
     setUserId(id);
     const u = DEMO_USERS.find((x) => x.id === id);
     setInterests(u?.interests || []);
     try {
-      const h = JSON.parse(localStorage.getItem(`adaptai_clicks_${id}`) || "[]") as ClickRow[];
+      const h = JSON.parse(localStorage.getItem(`adverb_clicks_${id}`) || "[]") as ClickRow[];
       setHistory(h);
     } catch {
       setHistory([]);
@@ -26,13 +26,13 @@ export default function ProfilePage() {
 
   function saveInterests() {
     if (!userId) return;
-    localStorage.setItem(`adaptai_interests_${userId}`, JSON.stringify(interests));
+    localStorage.setItem(`adverb_interests_${userId}`, JSON.stringify(interests));
     alert("Saved locally (demo). DB sync not wired for users.");
   }
 
   function clearHistory() {
     if (!userId) return;
-    localStorage.removeItem(`adaptai_clicks_${userId}`);
+    localStorage.removeItem(`adverb_clicks_${userId}`);
     setHistory([]);
   }
 

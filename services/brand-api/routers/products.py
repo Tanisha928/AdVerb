@@ -39,7 +39,7 @@ async def create_product(
     image_url = None
     if image and image.filename:
         body = await image.read()
-        image_url = upload_file(body, folder="adaptai/products", public_id_prefix="product")
+        image_url = upload_file(body, folder="adverb/products", public_id_prefix="product")
 
     benefits = [s.strip() for s in key_benefits.split(",") if s.strip()]
     p = Product(

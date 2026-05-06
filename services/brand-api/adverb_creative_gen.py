@@ -1,4 +1,4 @@
-"""Local generative backgrounds (palette logic from reference UI + solid catalog in ml/)."""
+"""Local generative backgrounds (palette logic + solid catalog in ml/).
 
 Uses deterministic palette selection and PIL gradients only — no Pollinations,
 picsum, or other third-party image APIs.
@@ -30,7 +30,7 @@ def _hex_to_rgb(h: str) -> tuple[int, int, int]:
     return int(h[0:2], 16), int(h[2:4], 16), int(h[4:6], 16)
 
 
-# Palettes from reference AdVerb UI (categoryPalettes + defaults).
+# Palettes from reference UI design (category palettes + defaults).
 _CATEGORY_PALETTES: dict[str, list[dict[str, str]]] = {
     "shoes": [
         {"start": "#1d4ed8", "end": "#38bdf8", "accent": "#facc15", "ink": "#0f172a"},
@@ -65,7 +65,7 @@ _DEFAULT_PALETTES: list[dict[str, str]] = [
 
 
 def hash_seed(input_str: str) -> int:
-    """Match AdVerb aiImageGenerator hashSeed (uint32)."""
+    """Match reference hashSeed (uint32)."""
     h = 2166136261 & 0xFFFFFFFF
     for ch in input_str:
         h = (h ^ ord(ch)) & 0xFFFFFFFF
@@ -188,7 +188,7 @@ def render_adverb_background_bytes(
     brand_name: str = "",
     seed: int | None = None,
 ) -> bytes:
-    """Raster background: gradient from AdVerb palettes + light named-backdrop tint."""
+    """Raster background: brand palettes + light solid tint."""
     seed_val = int(seed) if seed is not None else 0
     palette_key = f"{brand_name}|{industry}|{angle or ''}|{seed_val}"
     palette_seed = hash_seed(palette_key)

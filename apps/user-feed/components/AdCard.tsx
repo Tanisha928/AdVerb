@@ -6,7 +6,7 @@ import { trackClick } from "@/lib/ad";
 
 function recordClick(userId: string, ad: ServedAd) {
   try {
-    const key = `adaptai_clicks_${userId}`;
+    const key = `adverb_clicks_${userId}`;
     const prev = JSON.parse(localStorage.getItem(key) || "[]") as { id: string; at: string; headline?: string }[];
     prev.unshift({ id: ad.id, at: new Date().toISOString(), headline: ad.headline || undefined });
     localStorage.setItem(key, JSON.stringify(prev.slice(0, 50)));

@@ -14,8 +14,8 @@ BACKGROUNDS = [
     ("warm-grey",     "#e8e4df"),
 ]
 
-# Repo layout: ml/ at root; static pack lives under AdVerb demo bundle.
-out = Path(__file__).resolve().parent.parent / "AdVerb" / "assets" / "backgrounds"
+REPO_ROOT = Path(__file__).resolve().parent.parent
+out = REPO_ROOT / "assets" / "backgrounds"
 out.mkdir(parents=True, exist_ok=True)
 
 for name, color in BACKGROUNDS:

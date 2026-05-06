@@ -22,10 +22,10 @@ logger = logging.getLogger("ad-serving")
 
 DATABASE_URL = os.environ.get(
     "DATABASE_URL",
-    "postgresql://adaptai:adaptai_secret@localhost:5432/adaptai",
+    "postgresql://adverb:adverb_secret@localhost:5432/adverb",
 )
 REDIS_URL = os.environ.get("REDIS_URL", "redis://localhost:6379")
-RABBITMQ_URL = os.environ.get("RABBITMQ_URL", "amqp://adaptai:adaptai_secret@localhost:5672/")
+RABBITMQ_URL = os.environ.get("RABBITMQ_URL", "amqp://adverb:adverb_secret@localhost:5672/")
 
 CLICK_QUEUE = "click_events"
 
@@ -243,7 +243,7 @@ async def lifespan(app: FastAPI):
         await pool.close()
 
 
-app = FastAPI(title="AdaptAI Ad Serving", lifespan=lifespan)
+app = FastAPI(title="adverb Ad Serving", lifespan=lifespan)
 _LOCAL_ORIGIN = r"https?://(localhost|127\.0\.0\.1)(:\d+)?$"
 app.add_middleware(
     CORSMiddleware,

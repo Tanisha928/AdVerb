@@ -7,7 +7,7 @@ export default function Home() {
   const router = useRouter();
 
   function pick(userId: string) {
-    localStorage.setItem("adaptai_user_id", userId);
+    localStorage.setItem("adverb_user_id", userId);
     router.push("/feed");
   }
 
