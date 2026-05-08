@@ -15,7 +15,7 @@ logger = logging.getLogger("analytics-worker")
 
 DATABASE_URL = os.environ["DATABASE_URL"]
 REDIS_URL = os.environ.get("REDIS_URL", "redis://redis:6379")
-RABBITMQ_URL = os.environ.get("RABBITMQ_URL", "amqp://adverb:adverb_secret@rabbitmq:5672/")
+RABBITMQ_URL = os.environ.get("RABBITMQ_URL", "amqp://adaptai:adaptai_secret@rabbitmq:5672/")
 
 CLICK_QUEUE = "click_events"
 

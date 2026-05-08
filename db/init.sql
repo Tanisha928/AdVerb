@@ -1,4 +1,4 @@
--- adverb schema + seed data
+-- AdaptAI schema + seed data
 CREATE EXTENSION IF NOT EXISTS "pgcrypto";
 
 -- Brands
@@ -188,11 +188,11 @@ SELECT * FROM (VALUES
 ) AS t(id, product_id, campaign_id, headline, subheadline, cta, angle, layout, background_color, assembled_image_url, status, impressions, clicks, mab_weight);
 
 INSERT INTO users (id, name, email, age, gender, interests, location_city) VALUES
-('e0000001-0000-4000-8000-000000000001', 'Alex Rivera', 'alex.demo@adverb.local', 24, 'nonbinary', ARRAY['coffee','tech','travel'], 'Austin'),
-('e0000001-0000-4000-8000-000000000002', 'Jordan Lee', 'jordan.demo@adverb.local', 31, 'female', ARRAY['fitness','gaming','food'], 'Seattle'),
-('e0000001-0000-4000-8000-000000000003', 'Sam Patel', 'sam.demo@adverb.local', 27, 'male', ARRAY['beauty','fashion','travel'], 'Miami'),
-('e0000001-0000-4000-8000-000000000004', 'Casey Nguyen', 'casey.demo@adverb.local', 22, 'female', ARRAY['gaming','tech','coffee'], 'Denver'),
-('e0000001-0000-4000-8000-000000000005', 'Riley Brooks', 'riley.demo@adverb.local', 35, 'male', ARRAY['fitness','food','beauty'], 'Chicago');
+('e0000001-0000-4000-8000-000000000001', 'Alex Rivera', 'alex.demo@adaptai.edu', 24, 'nonbinary', ARRAY['coffee','tech','travel'], 'Austin'),
+('e0000001-0000-4000-8000-000000000002', 'Jordan Lee', 'jordan.demo@adaptai.edu', 31, 'female', ARRAY['fitness','gaming','food'], 'Seattle'),
+('e0000001-0000-4000-8000-000000000003', 'Sam Patel', 'sam.demo@adaptai.edu', 27, 'male', ARRAY['beauty','fashion','travel'], 'Miami'),
+('e0000001-0000-4000-8000-000000000004', 'Casey Nguyen', 'casey.demo@adaptai.edu', 22, 'female', ARRAY['gaming','tech','coffee'], 'Denver'),
+('e0000001-0000-4000-8000-000000000005', 'Riley Brooks', 'riley.demo@adaptai.edu', 35, 'male', ARRAY['fitness','food','beauty'], 'Chicago');
 
 -- 200 synthetic ad events over last 7 days
 INSERT INTO ad_events (user_id, creative_id, campaign_id, event_type, device_type, page_category, created_at)

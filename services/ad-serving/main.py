@@ -22,10 +22,10 @@ logger = logging.getLogger("ad-serving")
 
 DATABASE_URL = os.environ.get(
     "DATABASE_URL",
-    "postgresql://adverb:adverb_secret@localhost:5432/adverb",
+    "postgresql://adaptai:adaptai_secret@localhost:5432/adaptai",
 )
 REDIS_URL = os.environ.get("REDIS_URL", "redis://localhost:6379")
-RABBITMQ_URL = os.environ.get("RABBITMQ_URL", "amqp://adverb:adverb_secret@localhost:5672/")
+RABBITMQ_URL = os.environ.get("RABBITMQ_URL", "amqp://adaptai:adaptai_secret@localhost:5672/")
 
 CLICK_QUEUE = "click_events"
 
