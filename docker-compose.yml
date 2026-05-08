@@ -2,8 +2,8 @@ services:
   rabbitmq:
     image: rabbitmq:3.13-management
     environment:
-      RABBITMQ_DEFAULT_USER: adverb
-      RABBITMQ_DEFAULT_PASS: adverb_secret
+      RABBITMQ_DEFAULT_USER: adaptai
+      RABBITMQ_DEFAULT_PASS: adaptai_secret
     ports:
       - "5672:5672"
       - "15672:15672"   # Management UI — queue depth visible here under Queues tab
@@ -20,9 +20,9 @@ services:
     # Use 16+ if your local volume was first created with PG16; else 15 is fine.
     image: postgres:16-alpine
     environment:
-      POSTGRES_DB: adverb
-      POSTGRES_USER: adverb
-      POSTGRES_PASSWORD: adverb_secret
+      POSTGRES_DB: adaptai
+      POSTGRES_USER: adaptai
+      POSTGRES_PASSWORD: adaptai_secret
     volumes:
       - ./db/init.sql:/docker-entrypoint-initdb.d/init.sql
       - postgres_data:/var/lib/postgresql/data
@@ -30,7 +30,7 @@ services:
       # Host :5433 avoids conflict with a local Postgres on :5432; containers still use postgres:5432.
       - "5433:5432"
     healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U adverb -d adverb"]
+      test: ["CMD-SHELL", "pg_isready -U adaptai -d adaptai"]
       interval: 3s
       timeout: 5s
       retries: 20
@@ -86,7 +86,7 @@ services:
       # Host 8800 (change if in use on your machine).
       - "8800:8000"
     environment:
-      DATABASE_URL: postgresql://adverb:adverb_secret@postgres:5432/adverb
+      DATABASE_URL: postgresql://adaptai:adaptai_secret@postgres:5432/adaptai
       REDIS_URL: redis://redis:6379
       GROQ_API_KEY: ${GROQ_API_KEY:-}
       GROQ_MODEL: ${GROQ_MODEL:-}
@@ -119,9 +119,9 @@ services:
       # Host 8801 (change if in use on your machine).
       - "8801:8001"
     environment:
-      DATABASE_URL: postgresql://adverb:adverb_secret@postgres:5432/adverb
+      DATABASE_URL: postgresql://adaptai:adaptai_secret@postgres:5432/adaptai
       REDIS_URL: redis://redis:6379
-      RABBITMQ_URL: amqp://adverb:adverb_secret@rabbitmq:5672/
+      RABBITMQ_URL: amqp://adaptai:adaptai_secret@rabbitmq:5672/
     depends_on:
       postgres:
         condition: service_healthy
@@ -134,9 +134,9 @@ services:
   analytics-worker:
     build: ./services/analytics-worker
     environment:
-      DATABASE_URL: postgresql://adverb:adverb_secret@postgres:5432/adverb
+      DATABASE_URL: postgresql://adaptai:adaptai_secret@postgres:5432/adaptai
       REDIS_URL: redis://redis:6379
-      RABBITMQ_URL: amqp://adverb:adverb_secret@rabbitmq:5672/
+      RABBITMQ_URL: amqp://adaptai:adaptai_secret@rabbitmq:5672/
     depends_on:
       postgres:
         condition: service_healthy

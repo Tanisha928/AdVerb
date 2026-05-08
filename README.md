@@ -122,14 +122,11 @@ More detail: **[`ARCHITECTURE.md`](./ARCHITECTURE.md)**.
 4. **Database (host machine)**
 
    - Host: `localhost` port **5433**  
-   - User: **`adverb`**  
-   - Password: **`adverb_secret`**  
-   - Database: **`adverb`**  
+   - User: **`adaptai`**
+   - Password: **`adaptai_secret`**
+   - Database: **`adaptai`**
 
    Containers use `postgres:5432` with the same credentials.
-
-> If you previously used the old `adaptai` database user, **recreate the Postgres volume** after this rename:  
-> `docker compose down` then `docker volume rm <project>_postgres_data` and `docker compose up --build` (destructive to local DB data).
 
 ---
 
@@ -161,7 +158,7 @@ Seeded **approved** creatives exist if you skip generation.
 
 ## Troubleshooting
 
-- **`password authentication failed for user "adverb"`** — Postgres volume was initialized with different credentials. Remove the `postgres_data` volume and re-run compose so `db/init.sql` applies again.  
+- **`password authentication failed for user "adaptai"`** — Postgres volume was initialized with different credentials. Remove the `postgres_data` volume and re-run compose so `db/init.sql` applies again, or fix the password inside Postgres.  
 - **`TypeError: failed to fetch`** — CORS or wrong `NEXT_PUBLIC_*` URL; rebuild the affected frontend image after env changes.  
 - **Creative generation errors** — Confirm `GROQ_API_KEY`, Cloudinary vars, and outbound HTTPS to `image.pollinations.ai`. For air-gapped dev, set `AD_IMAGE_BACKEND=adverb`.  
 - **Postgres version mismatch on volume** — Align the `postgres:` image with the volume’s major version, or remove the volume and re-init.
