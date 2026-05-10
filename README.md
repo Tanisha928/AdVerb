@@ -160,7 +160,7 @@ Seeded **approved** creatives exist if you skip generation.
 
 - **`password authentication failed for user "adaptai"`** — Postgres volume was initialized with different credentials. Remove the `postgres_data` volume and re-run compose so `db/init.sql` applies again, or fix the password inside Postgres.  
 - **`TypeError: failed to fetch`** — CORS or wrong `NEXT_PUBLIC_*` URL; rebuild the affected frontend image after env changes.  
-- **Creative generation errors** — Confirm `GROQ_API_KEY`, Cloudinary vars, and outbound HTTPS to `image.pollinations.ai`. For air-gapped dev, set `AD_IMAGE_BACKEND=adverb`.  
+- **Creative generation errors** — Confirm `GROQ_API_KEY`, Cloudinary vars, and outbound HTTPS to `image.pollinations.ai`. Pollinations free tier often returns **429**; the API retries, serializes requests, then falls back to **local PIL** backgrounds (`POLLINATIONS_FALLBACK_TO_LOCAL`, default on). Set `AD_IMAGE_BACKEND=adverb` to skip Pollinations entirely.  
 - **Postgres version mismatch on volume** — Align the `postgres:` image with the volume’s major version, or remove the volume and re-init.
 
 ---
