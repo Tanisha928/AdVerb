@@ -211,7 +211,7 @@ def generate_creatives(
             for i in range(target_variant_count)
         )
 
-        max_workers = int(os.environ.get("AD_CREATIVE_MAX_WORKERS", "2"))
+        max_workers = int(os.environ.get("AD_CREATIVE_MAX_WORKERS", "1"))
         max_workers = max(1, min(max_workers, target_variant_count))
         with ThreadPoolExecutor(max_workers=max_workers) as executor:
             future_map = {executor.submit(_worker_render_variant, p): p[-2] for p in payloads}

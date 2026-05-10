@@ -5,6 +5,7 @@ from __future__ import annotations
 import json
 import logging
 import os
+import threading
 import time
 from io import BytesIO
 from urllib.parse import quote
@@ -25,6 +26,9 @@ DEFAULT_NEGATIVE = (
 )
 
 logger = logging.getLogger(__name__)
+
+# Serialize Pollinations HTTP calls — concurrent variants share one free-tier quota.
+_POLLINATIONS_HTTP_LOCK = threading.Lock()
 
 def _upload_cloudinary(image_data: bytes) -> dict[str, int | str]:
     configure()
@@ -128,6 +132,28 @@ def _compose_final(
     return out.getvalue()
 
 
+def _composite_from_background_bytes(
+    background_bytes: bytes,
+    width: int,
+    height: int,
+    product_image_url: str | None,
+    brand_logo_url: str | None,
+) -> dict[str, int | float | str]:
+    final_bytes = _compose_final(
+        background_bytes=background_bytes,
+        width=width,
+        height=height,
+        product_image_url=product_image_url,
+        brand_logo_url=brand_logo_url,
+    )
+    uploaded = _upload_cloudinary(final_bytes)
+    width_out = int(uploaded.get("width") or 0)
+    height_out = int(uploaded.get("height") or 0)
+    score = _basic_quality_score(width_out, height_out, final_bytes)
+    uploaded["quality_score"] = score
+    return uploaded
+
+
 def generate_ad_image(
     prompt: str,
     negative_prompt: str | None = None,
@@ -174,19 +200,9 @@ def generate_ad_image_with_meta(
             brand_name=brand_name or "",
             seed=seed,
         )
-        final_bytes = _compose_final(
-            background_bytes=bg_bytes,
-            width=width,
-            height=height,
-            product_image_url=product_image_url,
-            brand_logo_url=brand_logo_url,
+        return _composite_from_background_bytes(
+            bg_bytes, width, height, product_image_url, brand_logo_url
         )
-        uploaded = _upload_cloudinary(final_bytes)
-        width_out = int(uploaded.get("width") or 0)
-        height_out = int(uploaded.get("height") or 0)
-        score = _basic_quality_score(width_out, height_out, final_bytes)
-        uploaded["quality_score"] = score
-        return uploaded
 
     neg = negative_prompt if negative_prompt is not None else DEFAULT_NEGATIVE
     full_prompt = f"{prompt}, negative constraints: {neg}"
@@ -197,82 +213,101 @@ def generate_ad_image_with_meta(
     if seed is not None:
         params["seed"] = seed
 
-    max_retries = int(os.environ.get("POLLINATIONS_MAX_RETRIES", "2"))
-    retry_base_seconds = float(os.environ.get("POLLINATIONS_RETRY_BASE_SECONDS", "0.8"))
-    jitter_seconds = float(os.environ.get("POLLINATIONS_RETRY_JITTER_SECONDS", "0.1"))
+    max_retries = int(os.environ.get("POLLINATIONS_MAX_RETRIES", "6"))
+    retry_base_seconds = float(os.environ.get("POLLINATIONS_RETRY_BASE_SECONDS", "2.0"))
+    jitter_seconds = float(os.environ.get("POLLINATIONS_RETRY_JITTER_SECONDS", "0.25"))
     last_error = "unknown error"
+    response = None
 
-    with httpx.Client(timeout=180.0, follow_redirects=True) as http:
-        for attempt in range(max_retries + 1):
-            try:
-                response = http.get(endpoint, params=params)
-            except Exception as exc:  # noqa: BLE001
-                last_error = f"Pollinations request failed: {exc}"
+    with _POLLINATIONS_HTTP_LOCK:
+        with httpx.Client(timeout=180.0, follow_redirects=True) as http:
+            for attempt in range(max_retries + 1):
+                try:
+                    response = http.get(endpoint, params=params)
+                except Exception as exc:  # noqa: BLE001
+                    last_error = f"Pollinations request failed: {exc}"
+                    if attempt >= max_retries:
+                        break
+                    time.sleep(retry_base_seconds * (2**attempt) + jitter_seconds)
+                    continue
+
+                if response.status_code == 200:
+                    break
+
+                snippet = response.text[:500]
+                try:
+                    decoded = json.loads(response.content)
+                    if isinstance(decoded, dict):
+                        snippet = str(decoded.get("error") or decoded)
+                except json.JSONDecodeError:
+                    pass
+
+                if response.status_code == 429 and attempt < max_retries:
+                    retry_after_raw = response.headers.get("retry-after")
+                    retry_after = 0.0
+                    if retry_after_raw:
+                        try:
+                            retry_after = float(retry_after_raw)
+                        except ValueError:
+                            retry_after = 0.0
+                    exp = retry_base_seconds * (2**attempt)
+                    sleep_for = max(retry_after, 4.0, exp) + jitter_seconds
+                    logger.warning(
+                        "Pollinations 429 (attempt %s/%s), sleeping %.2fs",
+                        attempt + 1,
+                        max_retries + 1,
+                        sleep_for,
+                    )
+                    time.sleep(sleep_for)
+                    last_error = f"Pollinations rate limited (429): {snippet}"
+                    continue
+
+                last_error = f"Pollinations error {response.status_code}: {snippet}"
                 if attempt >= max_retries:
                     break
-                time.sleep(retry_base_seconds * (attempt + 1))
-                continue
+                time.sleep((retry_base_seconds * (2**attempt)) + jitter_seconds)
+            else:
+                response = None  # pragma: no cover
 
-            if response.status_code == 200:
-                break
-
-            snippet = response.text[:500]
-            try:
-                decoded = json.loads(response.content)
-                if isinstance(decoded, dict):
-                    snippet = str(decoded.get("error") or decoded)
-            except json.JSONDecodeError:
-                pass
-
-            # Pollinations frequently returns 429 bursts; retry with increasing delay.
-            if response.status_code == 429 and attempt < max_retries:
-                retry_after_raw = response.headers.get("retry-after")
-                retry_after = 0.0
-                if retry_after_raw:
-                    try:
-                        retry_after = float(retry_after_raw)
-                    except ValueError:
-                        retry_after = 0.0
-                sleep_for = max(retry_after, retry_base_seconds * (attempt + 1)) + jitter_seconds
-                logger.warning(
-                    "Pollinations 429 rate limit (attempt %s/%s), sleeping %.2fs",
-                    attempt + 1,
-                    max_retries + 1,
-                    sleep_for,
-                )
-                time.sleep(sleep_for)
-                last_error = f"Pollinations rate limited (429): {snippet}"
-                continue
-
-            last_error = f"Pollinations error {response.status_code}: {snippet}"
-            if attempt >= max_retries:
-                break
-            time.sleep((retry_base_seconds * (attempt + 1)) + jitter_seconds)
-        else:
-            response = None  # pragma: no cover
-
-    if response is None:
-        raise RuntimeError(f"Pollinations failed after retries: {last_error}")
-    if response.status_code != 200:
+    if response is None or response.status_code != 200:
+        fallback = os.environ.get("POLLINATIONS_FALLBACK_TO_LOCAL", "true").strip().lower() in (
+            "1",
+            "true",
+            "yes",
+            "on",
+        )
+        if fallback:
+            logger.warning(
+                "Pollinations failed after retries (%s); using local PIL background",
+                last_error,
+            )
+            bg_bytes = render_adverb_background_bytes(
+                width,
+                height,
+                industry=industry or "",
+                brand_tone=brand_tone,
+                angle=angle,
+                brand_name=brand_name or "",
+                seed=seed,
+            )
+            return _composite_from_background_bytes(
+                bg_bytes, width, height, product_image_url, brand_logo_url
+            )
+        if response is None:
+            raise RuntimeError(f"Pollinations failed after retries: {last_error}")
         raise RuntimeError(last_error)
 
     ct = (response.headers.get("content-type") or "").lower()
     if not ct.startswith("image/"):
         raise RuntimeError(f"Pollinations unexpected content-type {ct!r} len={len(response.content)}")
 
-    final_bytes = _compose_final(
-        background_bytes=response.content,
-        width=width,
-        height=height,
-        product_image_url=product_image_url,
-        brand_logo_url=brand_logo_url,
+    return _composite_from_background_bytes(
+        response.content,
+        width,
+        height,
+        product_image_url,
+        brand_logo_url,
     )
-    uploaded = _upload_cloudinary(final_bytes)
-    width_out = int(uploaded.get("width") or 0)
-    height_out = int(uploaded.get("height") or 0)
-    score = _basic_quality_score(width_out, height_out, final_bytes)
-    uploaded["quality_score"] = score
-    return uploaded
 
 
 def generate_ad_image_fast(prompt: str) -> str:
