@@ -1,0 +1,15 @@
+# Dependencies
+node_modules/
+
+# Next.js build output
+.next/
+out/
+
+# Environment secrets
+.env.local
+.env.*.local
+.env.production
+
+# TypeScript
+*.tsbuildinfo
+next-env.d.ts
