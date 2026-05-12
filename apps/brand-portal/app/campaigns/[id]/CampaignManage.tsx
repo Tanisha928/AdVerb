@@ -23,7 +23,9 @@ export function CampaignManage({
   const [campaign, setCampaign] = useState(initialCampaign);
   const [products, setProducts] = useState(initialProducts);
   const [creatives, setCreatives] = useState(initialCreatives);
-  const [busy, setBusy] = useState(false);
+  /** Which product is currently generating (null = idle). Header uses selected id when generating from dropdown. */
+  const [generatingProductId, setGeneratingProductId] = useState<string | null>(null);
+  const [launchBusy, setLaunchBusy] = useState(false);
   const [selectedProductId, setSelectedProductId] = useState(initialProducts[0]?.id || "");
 
   const stepIndex = Math.max(0, steps.indexOf(campaign.status));
@@ -59,7 +61,8 @@ export function CampaignManage({
       toast.error("Select a product first");
       return;
     }
-    setBusy(true);
+    if (generatingProductId) return;
+    setGeneratingProductId(targetProductId);
     try {
       await apiPost(`/campaigns/${campaign.id}/generate-creatives`, { product_id: targetProductId });
       toast.success("Creatives generated");
@@ -68,13 +71,13 @@ export function CampaignManage({
     } catch (e) {
       toast.error(String(e));
     } finally {
-      setBusy(false);
+      setGeneratingProductId(null);
     }
   }
 
   async function launch() {
     if (!canLaunch) return;
-    setBusy(true);
+    setLaunchBusy(true);
     try {
       await apiPatch(`/campaigns/${campaign.id}/status`, { status: "live" });
       toast.success("Campaign is live");
@@ -82,7 +85,7 @@ export function CampaignManage({
     } catch (e) {
       toast.error(String(e));
     } finally {
-      setBusy(false);
+      setLaunchBusy(false);
     }
   }
 
@@ -128,13 +131,13 @@ export function CampaignManage({
           )}
           {showGenerate && (
             <button
-              disabled={busy || !selectedProductId}
+              disabled={generatingProductId !== null || !selectedProductId}
               onClick={() => {
                 void generate();
               }}
               className="rounded-xl bg-indigo-600 px-4 py-2 text-sm font-semibold text-white hover:bg-indigo-500 disabled:opacity-50"
             >
-              {busy ? "Generating…" : "Generate creatives"}
+              {generatingProductId === selectedProductId ? "Generating…" : "Generate creatives"}
             </button>
           )}
           <Link
@@ -144,11 +147,11 @@ export function CampaignManage({
             Review
           </Link>
           <button
-            disabled={!canLaunch || busy}
+            disabled={!canLaunch || launchBusy || generatingProductId !== null}
             onClick={launch}
             className="rounded-xl bg-emerald-600 px-4 py-2 text-sm font-semibold text-white hover:bg-emerald-500 disabled:opacity-40"
           >
-            Launch campaign
+            {launchBusy ? "Launching…" : "Launch campaign"}
           </button>
         </div>
       </div>
@@ -182,11 +185,11 @@ export function CampaignManage({
             </div>
             <button
               type="button"
-              disabled={busy}
+              disabled={generatingProductId !== null}
               onClick={() => generate(p.id)}
               className="mt-4 w-full rounded-lg bg-indigo-600 py-2 text-xs font-semibold text-white hover:bg-indigo-500 disabled:opacity-50"
             >
-              {busy ? "Generating…" : "Generate creatives for this product"}
+              {generatingProductId === p.id ? "Generating…" : "Generate creatives for this product"}
             </button>
           </div>
         ))}

@@ -15,7 +15,7 @@ Deploy the Worker with **Wrangler**; it is not started by the root `docker compo
 
 When you run **`docker compose up`** from the repository root:
 
-- **`brand-api`** manages brands, campaigns, products, and **creative generation** (Groq copy + Pollinations or local PIL backgrounds + Cloudinary).
+- **`brand-api`** manages brands, campaigns, products, and **creative generation** (Groq copy + local PIL or Pollinations backgrounds + Cloudinary).
 - **`ad-serving`** serves ads to the user feed, maintains **MAB** weights in Redis, and appends **Redis stream** events.
 - **`analytics-worker`** consumes `ad_events` and updates PostgreSQL (and Redis aggregates where applicable).
 
@@ -31,7 +31,7 @@ The brand portal **does not** HTTP-call the Go decision engine in this layout; t
 ## Creative image pipeline (brand-api)
 
 - **Copy**: Groq (`GROQ_API_KEY`).
-- **Raster background**: **Pollinations** by default (`AD_IMAGE_BACKEND` unset or `pollinations`). Alternative: `AD_IMAGE_BACKEND=adverb` uses **`adverb_creative_gen`** (local PIL, no third-party image HTTP).
+- **Raster background**: Docker defaults to **`AD_IMAGE_BACKEND=adverb`** (local PIL via `adverb_creative_gen`). Set **`AD_IMAGE_BACKEND=pollinations`** for Pollinations; repeated **429** responses can bail to local PIL when `POLLINATIONS_FAST_429_TO_LOCAL` is on.
 - **Composite**: Product image + logo fetched over HTTPS, composed in Pillow, uploaded to Cloudinary under `adverb/…` folders.
 
-There is **no** “plain background only” shortcut in code: every generated creative goes through the Pollinations or local-PIL branch.
+There is **no** “plain background only” shortcut in code: every generated creative uses the Pollinations or local-PIL path.
