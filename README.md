@@ -54,7 +54,7 @@ End-to-end **personalized ad creative** platform: an **edge + Go + ML** recommen
               (streams, MAB, user signals)
 ```
 
-- **Brand creative generation** (hot path today): **Groq** writes copy variants; **Pollinations** generates scene backgrounds (HTTPS), then **Pillow** composites product + logo and **Cloudinary** stores the final asset (`AD_IMAGE_BACKEND=pollinations` by default). Set `AD_IMAGE_BACKEND=adverb` to use **local PIL** gradients only (no image API).
+- **Brand creative generation** (hot path today): **Groq** writes copy variants; backgrounds default to **local PIL** in Docker (`AD_IMAGE_BACKEND=adverb`, fast). Set **`AD_IMAGE_BACKEND=pollinations`** for Pollinations (HTTPS), then **Pillow** composites product + logo and **Cloudinary** stores the asset (with automatic local fallback on errors / repeated 429).
 - **Go + FAISS** services are available via a **Docker Compose profile** (see below); they illustrate the full recommendation architecture alongside the product APIs.
 
 More detail: **[`ARCHITECTURE.md`](./ARCHITECTURE.md)**.
@@ -99,7 +99,7 @@ More detail: **[`ARCHITECTURE.md`](./ARCHITECTURE.md)**.
    - `GROQ_API_KEY` — ad copy variants  
    - `CLOUDINARY_CLOUD_NAME`, `CLOUDINARY_API_KEY`, `CLOUDINARY_API_SECRET` — uploads  
 
-   Defaults: `AD_IMAGE_BACKEND=pollinations` (remote backgrounds). Optional: `AD_IMAGE_BACKEND=adverb` for local-only backgrounds.
+   Defaults: `AD_IMAGE_BACKEND=adverb` (fast local backgrounds). Set `AD_IMAGE_BACKEND=pollinations` for Pollinations (optional).
 
 2. **Start the stack** (from repository root)
 
@@ -160,7 +160,7 @@ Seeded **approved** creatives exist if you skip generation.
 
 - **`password authentication failed for user "adaptai"`** — Postgres volume was initialized with different credentials. Remove the `postgres_data` volume and re-run compose so `db/init.sql` applies again, or fix the password inside Postgres.  
 - **`TypeError: failed to fetch`** — CORS or wrong `NEXT_PUBLIC_*` URL; rebuild the affected frontend image after env changes.  
-- **Creative generation errors** — Confirm `GROQ_API_KEY`, Cloudinary vars, and outbound HTTPS to `image.pollinations.ai`. Pollinations free tier often returns **429**; the API retries, serializes requests, then falls back to **local PIL** backgrounds (`POLLINATIONS_FALLBACK_TO_LOCAL`, default on). Set `AD_IMAGE_BACKEND=adverb` to skip Pollinations entirely.  
+- **Creative generation errors** — Confirm `GROQ_API_KEY`, Cloudinary vars. Default Docker **`AD_IMAGE_BACKEND=adverb`** uses fast local PIL backgrounds; set **`AD_IMAGE_BACKEND=pollinations`** for Pollinations (needs HTTPS; 429s fall back to local unless disabled).  
 - **Postgres version mismatch on volume** — Align the `postgres:` image with the volume’s major version, or remove the volume and re-init.
 
 ---

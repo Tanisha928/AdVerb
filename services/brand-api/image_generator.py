@@ -5,7 +5,6 @@ from __future__ import annotations
 import json
 import logging
 import os
-import threading
 import time
 from io import BytesIO
 from urllib.parse import quote
@@ -27,8 +26,7 @@ DEFAULT_NEGATIVE = (
 
 logger = logging.getLogger(__name__)
 
-# Serialize Pollinations HTTP calls — concurrent variants share one free-tier quota.
-_POLLINATIONS_HTTP_LOCK = threading.Lock()
+# Optional: set AD_IMAGE_BACKEND=adverb to skip Pollinations entirely (fastest).
 
 def _upload_cloudinary(image_data: bytes) -> dict[str, int | str]:
     configure()
@@ -213,61 +211,74 @@ def generate_ad_image_with_meta(
     if seed is not None:
         params["seed"] = seed
 
-    max_retries = int(os.environ.get("POLLINATIONS_MAX_RETRIES", "6"))
-    retry_base_seconds = float(os.environ.get("POLLINATIONS_RETRY_BASE_SECONDS", "2.0"))
-    jitter_seconds = float(os.environ.get("POLLINATIONS_RETRY_JITTER_SECONDS", "0.25"))
+    max_retries = int(os.environ.get("POLLINATIONS_MAX_RETRIES", "2"))
+    retry_base_seconds = float(os.environ.get("POLLINATIONS_RETRY_BASE_SECONDS", "1.0"))
+    jitter_seconds = float(os.environ.get("POLLINATIONS_RETRY_JITTER_SECONDS", "0.15"))
+    fast_429_to_local = os.environ.get("POLLINATIONS_FAST_429_TO_LOCAL", "true").strip().lower() in (
+        "1",
+        "true",
+        "yes",
+        "on",
+    )
     last_error = "unknown error"
     response = None
+    count_429 = 0
 
-    with _POLLINATIONS_HTTP_LOCK:
-        with httpx.Client(timeout=180.0, follow_redirects=True) as http:
-            for attempt in range(max_retries + 1):
-                try:
-                    response = http.get(endpoint, params=params)
-                except Exception as exc:  # noqa: BLE001
-                    last_error = f"Pollinations request failed: {exc}"
-                    if attempt >= max_retries:
-                        break
-                    time.sleep(retry_base_seconds * (2**attempt) + jitter_seconds)
-                    continue
-
-                if response.status_code == 200:
-                    break
-
-                snippet = response.text[:500]
-                try:
-                    decoded = json.loads(response.content)
-                    if isinstance(decoded, dict):
-                        snippet = str(decoded.get("error") or decoded)
-                except json.JSONDecodeError:
-                    pass
-
-                if response.status_code == 429 and attempt < max_retries:
-                    retry_after_raw = response.headers.get("retry-after")
-                    retry_after = 0.0
-                    if retry_after_raw:
-                        try:
-                            retry_after = float(retry_after_raw)
-                        except ValueError:
-                            retry_after = 0.0
-                    exp = retry_base_seconds * (2**attempt)
-                    sleep_for = max(retry_after, 4.0, exp) + jitter_seconds
-                    logger.warning(
-                        "Pollinations 429 (attempt %s/%s), sleeping %.2fs",
-                        attempt + 1,
-                        max_retries + 1,
-                        sleep_for,
-                    )
-                    time.sleep(sleep_for)
-                    last_error = f"Pollinations rate limited (429): {snippet}"
-                    continue
-
-                last_error = f"Pollinations error {response.status_code}: {snippet}"
+    with httpx.Client(timeout=180.0, follow_redirects=True) as http:
+        for attempt in range(max_retries + 1):
+            try:
+                response = http.get(endpoint, params=params)
+            except Exception as exc:  # noqa: BLE001
+                last_error = f"Pollinations request failed: {exc}"
                 if attempt >= max_retries:
                     break
-                time.sleep((retry_base_seconds * (2**attempt)) + jitter_seconds)
-            else:
-                response = None  # pragma: no cover
+                time.sleep(retry_base_seconds * (attempt + 1) + jitter_seconds)
+                continue
+
+            if response.status_code == 200:
+                break
+
+            snippet = response.text[:500]
+            try:
+                decoded = json.loads(response.content)
+                if isinstance(decoded, dict):
+                    snippet = str(decoded.get("error") or decoded)
+            except json.JSONDecodeError:
+                pass
+
+            if response.status_code == 429:
+                count_429 += 1
+                if fast_429_to_local and count_429 >= 2:
+                    last_error = f"Pollinations 429 twice; switching to local PIL ({snippet})"
+                    response = None
+                    break
+
+            if response.status_code == 429 and attempt < max_retries:
+                retry_after_raw = response.headers.get("retry-after")
+                retry_after = 0.0
+                if retry_after_raw:
+                    try:
+                        retry_after = float(retry_after_raw)
+                    except ValueError:
+                        retry_after = 0.0
+                exp = retry_base_seconds * (attempt + 1)
+                sleep_for = min(8.0, max(retry_after, 1.0, exp)) + jitter_seconds
+                logger.warning(
+                    "Pollinations 429 (attempt %s/%s), sleeping %.2fs",
+                    attempt + 1,
+                    max_retries + 1,
+                    sleep_for,
+                )
+                time.sleep(sleep_for)
+                last_error = f"Pollinations rate limited (429): {snippet}"
+                continue
+
+            last_error = f"Pollinations error {response.status_code}: {snippet}"
+            if attempt >= max_retries:
+                break
+            time.sleep(min(3.0, retry_base_seconds * (attempt + 1)) + jitter_seconds)
+        else:
+            response = None  # pragma: no cover
 
     if response is None or response.status_code != 200:
         fallback = os.environ.get("POLLINATIONS_FALLBACK_TO_LOCAL", "true").strip().lower() in (
