@@ -108,7 +108,7 @@ export function DashboardHome() {
                 <Tooltip contentStyle={{ background: "#18181b", border: "1px solid #27272a", fontSize: 12 }} labelFormatter={(v) => new Date(v as number).toLocaleString()} />
                 <Legend />
                 {topIds.map((id, idx) => (
-                  <Line key={id} type="monotone" dataKey={id} name={`Variant ${idx + 1}`} stroke={PALETTE[idx % PALETTE.length]} strokeWidth={2} dot={false} isAnimationActive />
+                  <Line key={id} type="monotone" dataKey={id} name={`Variant ${idx + 1}`} stroke={PALETTE[idx % PALETTE.length]} strokeWidth={2} dot={{ r: 3 }} isAnimationActive />
                 ))}
               </LineChart>
             </ResponsiveContainer>

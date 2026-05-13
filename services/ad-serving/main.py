@@ -593,7 +593,18 @@ async def admin_mab_history(campaign_id: str):
     if not rds:
         return []
     items = await rds.lrange(f"mab_history:{campaign_id}", -200, -1)
-    return [json.loads(x) for x in items]
+    history = [json.loads(x) for x in items]
+    if history:
+        return history
+
+    weights = await rds.hgetall(f"mab:{campaign_id}")
+    if not weights:
+        return []
+    snapshot = {
+        "timestamp": time.time(),
+        "weights": {k: float(v) for k, v in weights.items()},
+    }
+    return [snapshot]
 
 
 @app.get("/admin/campaign-performance")
