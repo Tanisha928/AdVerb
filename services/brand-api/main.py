@@ -1,3 +1,5 @@
+import os
+
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from prometheus_fastapi_instrumentator import Instrumentator
@@ -6,11 +8,16 @@ from routers import brands, campaigns, products, creatives
 
 app = FastAPI(title="adverb Brand API", version="1.0.0")
 
+
+def _cors_origins() -> list[str]:
+    raw = os.environ.get("CORS_ALLOW_ORIGINS", "")
+    return [origin.strip().rstrip("/") for origin in raw.split(",") if origin.strip()]
+
 # Any localhost / 127.0.0.1 port (e.g. brand portal on 3010 in Docker) — dev-friendly for coursework
 _LOCAL_ORIGIN = r"https?://(localhost|127\.0\.0\.1)(:\d+)?$"
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=[],
+    allow_origins=_cors_origins(),
     allow_origin_regex=_LOCAL_ORIGIN,
     allow_credentials=True,
     allow_methods=["*"],

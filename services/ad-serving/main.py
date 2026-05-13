@@ -244,10 +244,17 @@ async def lifespan(app: FastAPI):
 
 
 app = FastAPI(title="adverb Ad Serving", lifespan=lifespan)
+
+
+def _cors_origins() -> list[str]:
+    raw = os.environ.get("CORS_ALLOW_ORIGINS", "")
+    return [origin.strip().rstrip("/") for origin in raw.split(",") if origin.strip()]
+
+
 _LOCAL_ORIGIN = r"https?://(localhost|127\.0\.0\.1)(:\d+)?$"
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=[],
+    allow_origins=_cors_origins(),
     allow_origin_regex=_LOCAL_ORIGIN,
     allow_credentials=True,
     allow_methods=["*"],
