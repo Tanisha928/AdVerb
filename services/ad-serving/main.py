@@ -25,7 +25,13 @@ DATABASE_URL = os.environ.get(
     "postgresql://adaptai:adaptai_secret@localhost:5432/adaptai",
 )
 REDIS_URL = os.environ.get("REDIS_URL", "redis://localhost:6379")
-RABBITMQ_URL = os.environ.get("RABBITMQ_URL", "amqp://adaptai:adaptai_secret@localhost:5672/")
+RABBITMQ_URL = os.environ.get("RABBITMQ_URL", "")
+FORWARD_EVENTS_TO_WORKER = os.environ.get("FORWARD_EVENTS_TO_WORKER", "").strip().lower() in (
+    "1",
+    "true",
+    "yes",
+    "on",
+)
 
 CLICK_QUEUE = "click_events"
 
@@ -33,6 +39,34 @@ pool: asyncpg.Pool | None = None
 rds: redis.Redis | None = None
 rmq_connection: aio_pika.RobustConnection | None = None
 rmq_channel: aio_pika.RobustChannel | None = None
+
+
+async def push_live_event(
+    user_id: str,
+    creative_id: str,
+    campaign_id: str,
+    event_type: str,
+    timestamp: str,
+):
+    if not pool or not rds:
+        return
+    async with pool.acquire() as conn:
+        user = await conn.fetchrow("SELECT name FROM users WHERE id = $1::uuid", user_id)
+        creative = await conn.fetchrow(
+            "SELECT headline FROM creatives WHERE id = $1::uuid", creative_id
+        )
+        campaign = await conn.fetchrow(
+            "SELECT name FROM campaigns WHERE id = $1::uuid", campaign_id
+        )
+    payload = {
+        "event_type": event_type,
+        "user_name": user["name"] if user else user_id,
+        "creative_headline": creative["headline"] if creative else "",
+        "campaign_name": campaign["name"] if campaign else "",
+        "timestamp": timestamp,
+    }
+    await rds.lpush("live_events", json.dumps(payload))
+    await rds.ltrim("live_events", 0, 19)
 
 
 async def log_event(
@@ -45,18 +79,46 @@ async def log_event(
 ):
     if not rds:
         return
-    await rds.xadd(
-        "ad_events",
-        {
-            "user_id": user_id,
-            "creative_id": creative_id,
-            "campaign_id": campaign_id,
-            "event_type": event_type,
-            "device_type": device_type,
-            "page_category": page_category,
-            "timestamp": datetime.now(timezone.utc).isoformat(),
-        },
-    )
+    timestamp = datetime.now(timezone.utc).isoformat()
+    if FORWARD_EVENTS_TO_WORKER:
+        await rds.xadd(
+            "ad_events",
+            {
+                "user_id": user_id,
+                "creative_id": creative_id,
+                "campaign_id": campaign_id,
+                "event_type": event_type,
+                "device_type": device_type,
+                "page_category": page_category,
+                "timestamp": timestamp,
+            },
+        )
+        return
+    if not pool:
+        return
+    async with pool.acquire() as conn:
+        await conn.execute(
+            """
+            INSERT INTO ad_events (user_id, creative_id, campaign_id, event_type, device_type, page_category)
+            VALUES ($1::uuid, $2::uuid, $3::uuid, $4, $5, $6)
+            """,
+            user_id,
+            creative_id,
+            campaign_id,
+            event_type,
+            device_type,
+            page_category,
+        )
+
+    clicked = event_type == "click"
+    await update_mab_weights(rds, campaign_id, creative_id, clicked)
+    if event_type == "impression":
+        seen_key = f"seen:{user_id}:{creative_id}"
+        await rds.incr(seen_key)
+        await rds.expire(seen_key, 86400)
+    await rds.hincrby(f"stats:{campaign_id}", event_type, 1)
+    await rds.hincrby("global_stats", event_type, 1)
+    await push_live_event(user_id, creative_id, campaign_id, event_type, timestamp)
 
 
 async def init_mab_state():
@@ -228,10 +290,13 @@ async def lifespan(app: FastAPI):
     rds = redis.from_url(REDIS_URL, decode_responses=True)
     await init_mab_state()
 
-    rmq_connection = await aio_pika.connect_robust(RABBITMQ_URL)
-    rmq_channel = await rmq_connection.channel()
-    await rmq_channel.declare_queue(CLICK_QUEUE, durable=True)
-    logger.info("RabbitMQ connected — queue '%s' declared", CLICK_QUEUE)
+    if FORWARD_EVENTS_TO_WORKER and RABBITMQ_URL:
+        rmq_connection = await aio_pika.connect_robust(RABBITMQ_URL)
+        rmq_channel = await rmq_connection.channel()
+        await rmq_channel.declare_queue(CLICK_QUEUE, durable=True)
+        logger.info("RabbitMQ connected — queue '%s' declared", CLICK_QUEUE)
+    else:
+        logger.info("RabbitMQ disabled; analytics are processed inline")
 
     yield
 
@@ -367,8 +432,16 @@ async def track_click(body: TrackBody):
         await rds.expire(f"user_clicks:{body.user_id}", 60 * 60 * 24 * 30)
         await rds.delete(f"seen:{body.user_id}:{body.creative_id}")
 
-        # Enqueue to RabbitMQ for async processing by analytics-worker
-        if rmq_channel:
+        if not FORWARD_EVENTS_TO_WORKER:
+            await log_event(
+                body.user_id,
+                body.creative_id,
+                body.campaign_id,
+                "click",
+                "unknown",
+                "feed",
+            )
+        elif rmq_channel:
             payload = {
                 "user_id": body.user_id,
                 "creative_id": body.creative_id,
