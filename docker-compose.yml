@@ -135,6 +135,23 @@ services:
         condition: service_healthy
     restart: unless-stopped
 
+  adpulse:
+    build:
+      context: ./apps/adpulse
+      args:
+        NEXT_PUBLIC_BRAND_API_URL: http://localhost:8800
+        NEXT_PUBLIC_AD_SERVING_URL: http://localhost:8801
+    ports:
+      - "3000:3000"
+    environment:
+      NEXT_PUBLIC_BRAND_API_URL: http://localhost:8800
+      NEXT_PUBLIC_AD_SERVING_URL: http://localhost:8801
+      BRAND_API_URL: http://brand-api:8000
+      AD_SERVING_INTERNAL_URL: http://ad-serving:8001
+    depends_on:
+      - brand-api
+      - ad-serving
+
   analytics-worker:
     build: ./services/analytics-worker
     environment:
