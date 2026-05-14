@@ -129,6 +129,94 @@ Creative generation requires `GROQ_API_KEY` and Cloudinary credentials in `.env`
 
 ---
 
+## Testing
+
+The project includes a full automated test suite covering both the frontend Next.js app and the backend FastAPI service.
+
+### Frontend — Vitest + React Testing Library (`apps/adpulse`)
+
+**Tools:** [Vitest](https://vitest.dev/), [React Testing Library](https://testing-library.com/), jsdom, MSW
+
+**What is tested:**
+
+| Area | File | Coverage |
+|------|------|----------|
+| `StatusBadge` component | `__tests__/components/StatusBadge.test.tsx` | Renders correct label and CSS class for every status |
+| `AngleBadge` component | `__tests__/components/AngleBadge.test.tsx` | Text transformation, colour variants |
+| `AdCard` component | `__tests__/components/AdCard.test.tsx` | Headline/CTA render, click tracking, localStorage, brand colour |
+| `CampaignManage` component | `__tests__/components/CampaignManage.test.tsx` | Campaign load, product list, launch gate, creative generation flow |
+| `lib/api` utilities | `__tests__/lib/api.test.ts` | `apiGet`, `apiPost`, `apiPatch` — correct URLs, headers, error handling |
+| `lib/ad` utilities | `__tests__/lib/ad.test.ts` | `fetchFeed`, `trackClick` — parameter passing and API calls |
+| `lib/demoUsers` | `__tests__/lib/demoUsers.test.ts` | Structure and uniqueness of demo user data |
+
+**Run the frontend tests:**
+
+```bash
+cd apps/adpulse
+npm install              # first time only
+npm run test:run         # single run (CI-friendly)
+npm test                 # watch mode
+npm run test:coverage    # with lcov/text coverage report
+```
+
+---
+
+### Backend — Pytest (`services/brand-api`)
+
+**Tools:** [pytest](https://pytest.org/), [pytest-mock](https://pytest-mock.readthedocs.io/), FastAPI `TestClient`, `unittest.mock.MagicMock`
+
+All database calls are mocked via a `mock_db` fixture — no real Postgres needed to run the tests.
+
+**What is tested:**
+
+| Router | File | Coverage |
+|--------|------|----------|
+| `/brands` | `tests/test_brands.py` | Create, list, get, stats calculation |
+| `/campaigns` | `tests/test_campaigns.py` | Create, list, status transitions, analytics, error handling |
+| `/creatives` | `tests/test_creatives.py` | List, approve, reject, validation |
+| `/products` | `tests/test_products.py` | Create, list, duplicate detection, key benefit parsing |
+
+**Run the backend tests:**
+
+```bash
+cd services/brand-api
+pip install -r requirements.txt
+pip install -r requirements-test.txt   # pytest + pytest-mock
+pytest tests/ -v                        # all tests, verbose
+pytest tests/test_brands.py -v         # single file
+pytest tests/ -v --tb=short            # compact tracebacks
+```
+
+---
+
+### Manual / End-to-End Testing (application flow)
+
+With the full stack running (`docker compose up --build`), walk through these flows in the browser:
+
+**1 — Brand Portal** (`http://localhost:3000` → Brand Portal tab)
+- Create a new brand with logo, colours, and target audience.
+- Add a campaign and set it to **live**.
+- Add a product with key benefits.
+- Click **Generate Creatives** — verify AI copy and composed images appear.
+- Review creatives: approve one, reject another with a note.
+
+**2 — User Feed** (`http://localhost:3000` → User Feed tab)
+- Select a demo user profile (or browse anonymously).
+- Scroll the feed — confirm personalised ads render with correct brand colours and CTA.
+- Click an ad — verify the click event registers (check Admin dashboard).
+
+**3 — Admin Dashboard** (`http://localhost:3000` → Admin tab)
+- Check the **KPIs** panel for impression and click counts.
+- Open **Live Events** — confirm real-time stream updates on each feed interaction.
+- Check **Campaign Performance** table for per-campaign CTR.
+- Check **MAB Weights** chart — weights should shift after enough clicks.
+
+**4 — API docs** (optional, for inspecting raw responses)
+- brand-api Swagger: `http://localhost:8800/docs`
+- ad-serving Swagger: `http://localhost:8801/docs`
+
+---
+
 ## Conclusion
 
 Adverb demonstrates an end-to-end ad platform workflow: brands create campaigns, users receive personalized ads, and admins can observe performance and learning behavior in real time. The project can be demoed through the hosted Vercel/Render deployment or run fully locally with Docker.
