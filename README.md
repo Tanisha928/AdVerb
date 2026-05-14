@@ -8,9 +8,9 @@ End-to-end **personalized ad creative** platform: an **edge + Go + ML** recommen
 
 | App / Service | URL |
 |---------------|-----|
-| adverb app | `https://your-vercel-app.vercel.app` |
-| brand-api health | `https://your-brand-api.onrender.com/health` |
-| ad-serving health | `https://your-ad-serving.onrender.com/health` |
+| adverb app | https://ad-verb-lemon.vercel.app |
+| brand-api health | https://adverb-brand.onrender.com/health |
+| ad-serving health | https://adverb-serving.onrender.com/health |
 
 Demo flow:
 
